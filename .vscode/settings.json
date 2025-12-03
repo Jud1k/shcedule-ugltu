@@ -1,0 +1,9 @@
+{
+    "ruff.lineLength": 100,
+    "ruff.format.backend": "internal",
+    // "python.analysis.exclude":["/app","/tests"],
+    "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+  },
+  "remote.autoForwardPortsFallback": 0
+}
