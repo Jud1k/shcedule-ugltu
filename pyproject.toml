@@ -1,0 +1,81 @@
+[project]
+name = "FastApiSchedule"
+version = "0.1.0"
+description = "UGLTU Schedule API"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.17.1",
+    "passlib>=1.7.4",
+    "pydantic[email]>=2.12.3",
+    "pydantic-settings>=2.11.0",
+    "redis>=7.0.1",
+    "sqlalchemy>=2.0.44",
+    "uvicorn>=0.38.0",
+    "python-jose>=3.5.0",
+    "bcrypt<=4.3.0",
+    "slowapi>=0.1.9",
+    "python-multipart>=0.0.20",
+    "asyncpg>=0.31.0",
+    "fastapi[standard]>=0.120.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "aiosqlite>=0.21.0",
+    "faker>=37.12.0",
+    "httpx>=0.28.1",
+    "polyfactory>=2.22.3",
+    "pre-commit>=4.3.0",
+    "pyright>=1.1.407",
+    "pytest-asyncio>=1.2.0",
+    "ruff>=0.14.2",
+    "sentry-sdk[fastapi]>=2.45.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = ["app/migration/"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "B"]
+ignore = ["E501", "B008", "S101","B904"]
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "double"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402"]
+"**/{tests,docs,tools}/*" = ["E402"]
+
+[tool.pyright]
+include = ["app"]
+exclude = [
+    "**/egg-info",
+    "**/__pycache__",
+    "tests",
+    "app/migration"
+]
+typeCheckingMode = "standard"
+reportMissingImports = false
+reportMissingModuleSource = false
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[dependency-groups]
+dev = [
+    "fastapi-cli>=0.0.16",
+]
