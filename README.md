@@ -1,15 +1,6 @@
 # 🎓 Расписание УГЛТУ
 Веб-приложение для просмотра расписания занятий Уральского государственного лесотехнического университета.
 
-<img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi>
-<img src=https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB>
-<img src=https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white>
-<img src=https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white>
-
-
-# 🏗️ Архитектура
-Проект разделен на два основных компонента:
-
 ## Технологический стек
 - ⚡ FastAPI – высокопроизводительный Python-фреймворк для создания API
     - 📊 SQLALchemy – современный ORM для взаимодействия с базами данных SQL
