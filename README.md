@@ -98,11 +98,21 @@ cd ugltu-schedule
 
 ### Настройка переменных окружения
 ```
-POSTGRES_USER=your_user
-POSTGRES_PASSWORD=your_password
-POSTGRES_DB=ugltu_schedule
-REDIS_URL=redis://localhost:6379
-SECRET_KEY=your_secret_key
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_USER=username
+   DB_PASSWORD=password
+   DB_NAME=your_db_name
+   REDIS_PORT=6379
+   REDIS_SSL=0
+   REDIS_HOST=localhost
+   SECRET_KEY=your_secret_key
+   ALGORITHM=HS256
+   FIRST_SUPERUSER=your_superuser_email
+   FIRST_SUPERUSER_PASSWORD=your_superuser_password
+   ACCESS_TOKEN_EXPIRE_MINUTES=30
+   REFRESH_TOKEN_EXPIRE_MINUTES=43200
+   SENTRY_DSN=...
 ```
 
 ### Установка зависимостей через uv
