@@ -40,7 +40,7 @@ const RoutesProvider = () => {
       <Route
         path="admin"
         element={
-          <ProtectedRoute requiredRole="user">
+          <ProtectedRoute requiredRole="admin">
             <AdminLayout />
           </ProtectedRoute>
         }
