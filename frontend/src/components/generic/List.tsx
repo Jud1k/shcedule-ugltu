@@ -6,7 +6,7 @@ interface FormAutocompleteListProps
 export const List = ({ children, ...props }: FormAutocompleteListProps) => {
   return (
     <ul
-      className="absolute z-10 w-full mt-1 border bg-gray-900 border-gray-600 rounded-lg shadow-xl max-h-60 overflow-auto backdrop-blur-sm"
+      className="list absolute z-10 w-full mt-1 border bg-gray-900 border-gray-600 rounded-lg shadow-xl max-h-60 overflow-auto backdrop-blur-sm"
       {...props}
     >
       {children}

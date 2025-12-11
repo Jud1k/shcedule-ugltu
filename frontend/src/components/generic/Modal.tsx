@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 interface ModalProps {
   header: string;
-  triggerButton: React.ReactElement;
+  triggerButton?: React.ReactElement;
   children: React.ReactNode;
   isOpen?: boolean;
   onClose: () => void;

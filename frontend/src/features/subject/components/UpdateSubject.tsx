@@ -35,7 +35,7 @@ export const UpdateSubject = ({ subject }: UpdateSubjectProps) => {
 
   return (
     <Modal
-      header="Добавить новый предмет"
+      header="Изменить предмет"
       isOpen={isModalOpen}
       triggerButton={
         <Button
@@ -54,7 +54,7 @@ export const UpdateSubject = ({ subject }: UpdateSubjectProps) => {
         onSubmit={handleSubmit((data) => {
           updateSubjectMutation.mutate({ subjectId: subject.id, data });
         })}
-        className='className="flex flex-col items-center justify-center space-y-4 w-full'
+        className="flex flex-col items-center justify-center space-y-4 w-full"
       >
         <FormInput
           label="Название предмета"

@@ -4,7 +4,7 @@ import LessonService from './service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 
-export const createLessonSchema = z.object({
+export const updateLessonSchema = z.object({
   time_id: z.string().min(1, 'Выберите время'),
   day_of_week: z.string().min(1, 'Выберите день недели'),
   type: z.string().min(1, 'Выберите тип'),
@@ -14,17 +14,17 @@ export const createLessonSchema = z.object({
   group_id: z.string().min(1, 'Выберите группу из списка'),
 });
 
-export type CreateLessonForm = z.infer<typeof createLessonSchema>;
+export type UpdateLessonForm = z.infer<typeof updateLessonSchema>;
 
-type createLessonOptions = {
+type UpdateLessonOptions = {
   successMessage?: string;
-  mutationConfig?: MutationConfig<typeof LessonService.createLesson>;
+  mutationConfig?: MutationConfig<typeof LessonService.updateLesson>;
 };
 
-export const useCreateLesson = ({
+export const useUpdateLesson = ({
   successMessage,
   mutationConfig,
-}: createLessonOptions) => {
+}: UpdateLessonOptions) => {
   const queryClient = useQueryClient();
   const { handleApiError, handleSuccess } = useErrorHandler();
 
@@ -32,13 +32,13 @@ export const useCreateLesson = ({
   return useMutation({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: ['lessons'] });
-      handleSuccess(successMessage || 'Пара успешно создана');
+      handleSuccess(successMessage || 'Пара успешно изменена');
       onSuccess?.(...args);
     },
     onError: (error: unknown) => {
       handleApiError(error);
     },
     ...restConfig,
-    mutationFn: LessonService.createLesson,
+    mutationFn: LessonService.updateLesson,
   });
 };

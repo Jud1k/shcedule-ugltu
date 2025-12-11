@@ -1,25 +1,25 @@
-import { LessonCard } from './LessonCard';
-import { TIME_SLOTS } from '../types/consts';
 import Badge from '@/components/generic/Badge';
 import { LessonByQuery } from '../api/service';
-import Spinner from '@/components/generic/Spinner';
+import { LessonCard } from './LessonCard';
+import { TIME_SLOTS } from '../types/consts';
 
-interface LessonsListViewProps {
+interface ScheduleViewListProps {
   lessons?: LessonByQuery[];
-  isLoading: boolean;
+  selectedDayWeek?: number;
 }
 
-export const LessonsListView = ({
+export const ScheduleViewList = ({
   lessons = [],
-  isLoading,
-}: LessonsListViewProps) => {
-  if (isLoading) return <Spinner />;
-
+  selectedDayWeek,
+}: ScheduleViewListProps) => {
+  const filtredLessons = lessons?.filter(
+    (lesson) => lesson.day_of_week === selectedDayWeek,
+  );
   return (
     <div className="px-6">
       <div className="flex flex-col gap-4">
         {TIME_SLOTS.map((timeSlot) => {
-          const lessonForSlot = lessons.find(
+          const lessonForSlot = filtredLessons.find(
             (lesson) => lesson.time_id === timeSlot.id,
           );
           return (

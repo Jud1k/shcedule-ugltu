@@ -3,7 +3,12 @@ import FormSelect from '@/components/generic/FormSelect';
 import { Create } from '@/components/generic/Icons';
 import Modal from '@/components/generic/Modal';
 import { useState } from 'react';
-import { DAYS_OF_WEAK, LESSON_TYPES, TIME_SLOTS } from '../types/consts';
+import {
+  DAYS_OF_WEAK,
+  InputValues,
+  LESSON_TYPES,
+  TIME_SLOTS,
+} from '../types/consts';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createLessonSchema, useCreateLesson } from '../api/create-lesson';
@@ -11,13 +16,6 @@ import { AutocompleteTeacher } from './AutocompleteTeacher';
 import AutocompleteRoom from './AutocompleteRoom';
 import { AutocompleteGroup } from './AutocompleteGroup';
 import AutocompleteSubject from './AutocompleteSubject';
-
-type InputValues = {
-  teacher: string;
-  room: string;
-  group: string;
-  subject: string;
-};
 
 export function CreateLesson() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
