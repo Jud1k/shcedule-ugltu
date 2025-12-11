@@ -39,7 +39,7 @@ export const UpdateTeacher = ({ teacher }: UpdateTeacherProps) => {
   });
   return (
     <Modal
-      header="Добавить нового преподавателя"
+      header="Изменить преподавателя"
       isOpen={isModalOpen}
       triggerButton={
         <Button

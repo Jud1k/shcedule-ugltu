@@ -4,6 +4,7 @@ import SubjectService from './service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { getSubjectsQueryOptions } from './get-subjects';
+import { getSubjectQueryOptions } from './get-subject';
 
 export const updateSubjectFormSchema = z.object({
   name: z.string(),
@@ -28,12 +29,13 @@ export const useUpdateSubject = ({
 
   const { onSuccess, ...restConfig } = mutationConfig || {};
   return useMutation({
-    onSuccess: (...args) => {
-      queryClient.refetchQueries({
+    onSuccess: (data, ...args) => {
+      queryClient.setQueryData(getSubjectQueryOptions(data.id).queryKey, data);
+      queryClient.invalidateQueries({
         queryKey: getSubjectsQueryOptions().queryKey,
       });
       handleSuccess(successMessage || 'Предмет успешно обновлен');
-      onSuccess?.(...args);
+      onSuccess?.(data, ...args);
     },
     onError: (error: unknown) => {
       handleApiError(error);

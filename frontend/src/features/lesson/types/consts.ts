@@ -55,3 +55,10 @@ export const weekDayNames: string[] = [
   'СБ',
   'ВС',
 ];
+
+export type InputValues = {
+  teacher: string;
+  room: string;
+  group: string;
+  subject: string;
+};

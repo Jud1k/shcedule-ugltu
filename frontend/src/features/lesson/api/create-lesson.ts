@@ -32,7 +32,7 @@ export const useCreateLesson = ({
   return useMutation({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: ['lessons'] });
-      handleSuccess(successMessage || 'Предмет успешно создан');
+      handleSuccess(successMessage || 'Пара успешно создана');
       onSuccess?.(...args);
     },
     onError: (error: unknown) => {
