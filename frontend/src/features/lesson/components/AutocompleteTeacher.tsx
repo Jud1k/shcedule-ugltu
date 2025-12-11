@@ -4,6 +4,7 @@ import { List } from '@/components/generic/List';
 import Spinner from '@/components/generic/Spinner';
 import { useTeachers } from '@/features/teacher/api/get-teachers';
 import { useState } from 'react';
+import { Teacher } from '@/features/teacher/api/service';
 
 interface AutocompleteTeacherProps {
   onClick: (id: string) => void;
@@ -26,16 +27,18 @@ export const AutocompleteTeacher = ({
   const filteredTeachers = teachers?.filter((teacher) => {
     const input = value.toLowerCase().trim();
     const fullName =
-      `${teacher.first_name} ${teacher.middle_name || ''} ${teacher.last_name}`
+      `${teacher.last_name} ${teacher.first_name} ${teacher.middle_name || ''}`
         .toLowerCase()
         .trim();
 
     return fullName.includes(input);
   });
 
-  const handleTeacherSelect = (teacherId: string, teacherName: string) => {
-    onChange(teacherName);
-    onClick(teacherId);
+  const handleTeacherSelect = (teacher: Teacher) => {
+    const fullName =
+      `${teacher.last_name} ${teacher.first_name} ${teacher.middle_name || ''}`.trim();
+    onChange(fullName);
+    onClick(teacher.id);
     setIsListOpen(false);
   };
 
@@ -54,7 +57,7 @@ export const AutocompleteTeacher = ({
             <ListItem
               key={teacher.id}
               onClick={() => {
-                handleTeacherSelect(teacher.id, teacher.first_name);
+                handleTeacherSelect(teacher);
               }}
             >
               {`${teacher.last_name} ${teacher.first_name} ${teacher.middle_name || ''}`}
