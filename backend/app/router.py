@@ -22,4 +22,3 @@ api_router.include_router(student_router)
 api_router.include_router(subject_router)
 api_router.include_router(teacher_router)
 api_router.include_router(utils_router)
-

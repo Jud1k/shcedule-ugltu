@@ -10,18 +10,18 @@ class Setting(BaseSettings):
     REDIS_PORT: int
     REDIS_SSL: bool
     REDIS_HOST: str
-    FIRST_SUPERUSER:str
-    FIRST_SUPERUSER_PASSWORD:str
+    FIRST_SUPERUSER: str
+    FIRST_SUPERUSER_PASSWORD: str
     SECRET_KEY: str
     ALGORITHM: str
-    ACCESS_TOKEN_EXPIRE_MINUTES:int
-    REFRESH_TOKEN_EXPIRE_MINUTES:int
-    SENTRY_DSN:str
-    
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    REFRESH_TOKEN_EXPIRE_MINUTES: int
+    SENTRY_DSN: str
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
-settings = Setting() # type: ignore
+settings = Setting()  # type: ignore
 
 
 def get_db_url() -> str:

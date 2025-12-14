@@ -71,16 +71,16 @@ async def test_update_room(client: AsyncClient, room_factory: RoomFactory):
     assert response_data["capacity"] == room_in.capacity
     assert response_data["floor"] == room_in.floor
     assert response_data["status"] == room_in.status
-    
-    
+
+
 @pytest.mark.asyncio
 async def test_delete_room(client: AsyncClient, room_factory: RoomFactory):
     room = await room_factory.create_async()
 
     response = await client.delete(f"/api/v1/room/{room.id}")
     assert response.status_code == 204
-    
-    
+
+
 @pytest.mark.asyncio
 async def test_delete_room_not_found(client: AsyncClient, room_factory: RoomFactory):
     room_id = random.randint(1, 1_000_000)

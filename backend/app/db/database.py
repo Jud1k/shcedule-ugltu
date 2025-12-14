@@ -30,12 +30,13 @@ async def get_db():
         finally:
             await session.close()
 
-int_pk = Annotated[int, mapped_column(Integer,primary_key=True, autoincrement="auto")]
+
+int_pk = Annotated[int, mapped_column(Integer, primary_key=True, autoincrement="auto")]
 created_at = Annotated[datetime, mapped_column(TIMESTAMP, server_default=func.now())]
 updated_at = Annotated[
     datetime, mapped_column(TIMESTAMP, server_default=func.now(), onupdate=datetime.now)
 ]
-uniq_str = Annotated[str, mapped_column(Text,unique=True, nullable=False)]
+uniq_str = Annotated[str, mapped_column(Text, unique=True, nullable=False)]
 
 
 class Base(AsyncAttrs, DeclarativeBase):

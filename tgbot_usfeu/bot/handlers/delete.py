@@ -22,7 +22,7 @@ async def cmd_delete(message: Message, db_session: Session):
             "Use /register to create an account first.",
             parse_mode="Markdown",
         )
-        return 
+        return
     try:
         delete_user(db_session, user)
         logger.info(f"User {user_id} deleted their account")

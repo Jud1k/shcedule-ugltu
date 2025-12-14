@@ -20,6 +20,7 @@ configure_logging()
 
 # sentry_sdk.init(dsn=settings.SENTRY_DSN,send_default_pii=True,enable_logs=True)
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await redis_manager.connect()
@@ -31,7 +32,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-app.include_router(router=api_router,prefix="/api/v1")
+app.include_router(router=api_router, prefix="/api/v1")
 
 origins = [
     "http://localhost:5173",
@@ -48,7 +49,7 @@ app.add_middleware(
 
 
 @app.middleware("http")
-async def log_requests(request: Request, call_next)->Response|Any:
+async def log_requests(request: Request, call_next) -> Response | Any:
     request_id = str(uuid.uuid1())
     logger.info(f"Request started | ID: {request_id} | {request.method} {request.url}")
 
@@ -64,7 +65,7 @@ async def log_requests(request: Request, call_next)->Response|Any:
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(req: Request, exc: RequestValidationError)->JSONResponse:
+async def validation_exception_handler(req: Request, exc: RequestValidationError) -> JSONResponse:
     logger.error(f"Validation error: {exc.errors()}")
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -73,7 +74,7 @@ async def validation_exception_handler(req: Request, exc: RequestValidationError
 
 
 @app.exception_handler(ResponseValidationError)
-async def validation_exception_handler2(req: Request, exc: ResponseValidationError)->JSONResponse:
+async def validation_exception_handler2(req: Request, exc: ResponseValidationError) -> JSONResponse:
     logger.error(f"Validation error: {exc.errors()}")
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
@@ -82,5 +83,5 @@ async def validation_exception_handler2(req: Request, exc: ResponseValidationErr
 
 
 @app.get("/")
-async def main_page()->dict:
+async def main_page() -> dict:
     return {"Hi": "Guys"}

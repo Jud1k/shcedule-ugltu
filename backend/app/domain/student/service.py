@@ -18,7 +18,7 @@ class StudentService:
     async def get_all(self) -> list[Student]:
         return await self.student_repo.get_students()
 
-    async def get_by_id(self, student_id: int) -> Student|None:
+    async def get_by_id(self, student_id: int) -> Student | None:
         student = await self.student_repo.get_one_or_none_by_id(
             id=student_id,
         )
@@ -37,21 +37,21 @@ class StudentService:
             id=student_id,
         )
         if not student:
-            raise NotFoundException("Student",student_id)
+            raise NotFoundException("Student", student_id)
         try:
-            student= await self.student_repo.update(
+            student = await self.student_repo.update(
                 data=student,
                 update_data=student_in,
             )
             return student
         except IntegrityError as e:
             logger.error(f"Integirity error while updating student: {str(e)}")
-            raise ConflictException("Student",student_id)
+            raise ConflictException("Student", student_id)
 
-    async def delete(self, student_id: int)->None:
+    async def delete(self, student_id: int) -> None:
         student = await self.student_repo.get_one_or_none_by_id(id=student_id)
         if not student:
-            raise NotFoundException("Student",student_id) 
+            raise NotFoundException("Student", student_id)
         return await self.student_repo.delete(
-                id=student_id,
-            )
+            id=student_id,
+        )

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel,ConfigDict
+from pydantic import BaseModel, ConfigDict
 
 
 class BuildingBase(BaseModel):
@@ -8,7 +8,8 @@ class BuildingBase(BaseModel):
     address: str
 
     model_config = ConfigDict(from_attributes=True)
-    
+
+
 class BuildingCreate(BuildingBase):
     pass
 

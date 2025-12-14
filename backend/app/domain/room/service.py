@@ -18,7 +18,7 @@ class RoomService:
     async def get_all(self) -> list[Room]:
         return await self.room_repo.get_rooms()
 
-    async def get_by_id(self, room_id: int) -> Room|None:
+    async def get_by_id(self, room_id: int) -> Room | None:
         room = await self.room_repo.get_room_by_id(room_id=room_id)
         return room
 
@@ -33,17 +33,17 @@ class RoomService:
         room = await self.room_repo.get_one_or_none_by_id(id=room_id)
         if not room:
             logger.error(f"Room with {room_id} id does not exist")
-            raise NotFoundException("Room",room_id)
+            raise NotFoundException("Room", room_id)
         try:
             return await self.room_repo.update(data=room, update_data=room_in)
         except IntegrityError as e:
             logger.error(f"Integirity error while updating room: {str(e)}")
             raise ConflictException("Room")
 
-    async def delete(self, room_id: int)->None:
+    async def delete(self, room_id: int) -> None:
         room = await self.room_repo.get_one_or_none_by_id(id=room_id)
         if not room:
-            raise NotFoundException("Room",room_id)
+            raise NotFoundException("Room", room_id)
         return await self.room_repo.delete(id=room_id)
 
     async def search_rooms(self, query: str) -> list[Room]:

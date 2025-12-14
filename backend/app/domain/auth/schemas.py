@@ -14,10 +14,12 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
-    role:str|None=None
+    role: str | None = None
+
 
 class UserRegister(UserCreate):
     pass
+
 
 class UserRead(UserBase):
     id: uuid.UUID
@@ -32,5 +34,6 @@ class TokenPair(BaseModel):
 class AuthResponse(TokenPair):
     user: UserRead
 
+
 class PasswordChange(BaseModel):
-    new_password:str
+    new_password: str

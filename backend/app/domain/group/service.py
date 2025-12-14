@@ -30,7 +30,7 @@ class GroupService:
     async def get_by_id(self, group_id: int) -> Group | None:
         group = await self.group_repo.get_one_or_none_by_id(id=group_id)
         return group
-    
+
     async def get_groups_summary(self):
         groups = await self.group_repo.get_groups_summary()
         return groups
@@ -43,11 +43,11 @@ class GroupService:
         except IntegrityError as e:
             logger.error(f"Error while creating group: {str(e)}")
             raise ConflictException("Group")
-        
+
     async def update(self, group_id: int, group_in: GroupUpdate) -> Group:
         group = await self.group_repo.get_one_or_none_by_id(id=group_id)
         if group is None:
-            raise NotFoundException("Group",group_id)
+            raise NotFoundException("Group", group_id)
         try:
             group = await self.group_repo.update(data=group, update_data=group_in)
             await self.redis.delete_key(CacheKeys.GROUPS)
@@ -55,11 +55,11 @@ class GroupService:
         except IntegrityError as e:
             logger.error(f"Integirity error while updating group: {str(e)}")
             raise ConflictException("Group")
-        
+
     async def delete(self, group_id: int):
         group = await self.group_repo.get_one_or_none_by_id(id=group_id)
         if not group:
-            raise NotFoundException("Group",group_id)
+            raise NotFoundException("Group", group_id)
         await self.redis.delete_key("groups")
         await self.group_repo.delete(id=group_id)
 

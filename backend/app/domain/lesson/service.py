@@ -22,15 +22,15 @@ class LessonService:
         lesson = await self.lesson_repo.get_one_or_none_by_id(id=lesson_id)
         return lesson
 
-    async def get_lessons_by_group_id(self, group_id: int)->list[Lesson]:
+    async def get_lessons_by_group_id(self, group_id: int) -> list[Lesson]:
         return await self.lesson_repo.get_lessons_by_group_id(group_id=group_id)
 
-    async def get_lessons_by_room_id(self,room_id:int)->list[Lesson]:
+    async def get_lessons_by_room_id(self, room_id: int) -> list[Lesson]:
         return await self.lesson_repo.get_lessons_by_room_id(room_id=room_id)
-    
-    async def get_lessons_by_teacher_id(self,teacher_id:int)->list[Lesson]:
+
+    async def get_lessons_by_teacher_id(self, teacher_id: int) -> list[Lesson]:
         return await self.lesson_repo.get_lessons_by_teacher_id(teacher_id=teacher_id)
-    
+
     async def create(self, lesson_in: LessonCreate) -> Lesson:
         try:
             lesson = await self.lesson_repo.create(data=lesson_in)
@@ -38,11 +38,11 @@ class LessonService:
         except IntegrityError as e:
             logger.error(f"Integirity error while creating Lesson:{str(e)} ")
             raise ConflictException("Lesson")
-        
+
     async def update(self, lesson_id: int, lesson_in: LessonUpdate) -> Lesson:
         lesson = await self.lesson_repo.get_one_or_none_by_id(id=lesson_id)
         if not lesson:
-            raise NotFoundException("Lesson",lesson_id)
+            raise NotFoundException("Lesson", lesson_id)
         try:
             return await self.lesson_repo.update(data=lesson, update_data=lesson_in)
         except IntegrityError as e:
@@ -52,5 +52,5 @@ class LessonService:
     async def delete(self, lesson_id: int):
         lesson = await self.lesson_repo.get_one_or_none_by_id(id=lesson_id)
         if not lesson:
-            raise NotFoundException("Lesson",lesson_id)
+            raise NotFoundException("Lesson", lesson_id)
         return await self.lesson_repo.delete(id=lesson_id)

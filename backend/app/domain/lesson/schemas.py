@@ -14,7 +14,8 @@ class LessonBase(BaseModel):
     type: str
 
     model_config = ConfigDict(from_attributes=True)
-    
+
+
 class LessonRead(LessonBase):
     id: int
     subject_id: int
@@ -28,13 +29,15 @@ class LessonRead(LessonBase):
     created_at: datetime
     updated_at: datetime
 
+
 class LessonReadMinimal(LessonBase):
-    id:int
+    id: int
     subject_id: int
     teacher_id: int
     room_id: int
     group_id: int
-    
+
+
 class LessonCreate(LessonBase):
     subject_id: int
     teacher_id: int
