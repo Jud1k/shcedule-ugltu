@@ -18,6 +18,7 @@ dependencies = [
     "python-multipart>=0.0.20",
     "asyncpg>=0.31.0",
     "fastapi[standard]>=0.120.2",
+    "aio-pika>=9.5.8",
 ]
 
 [dependency-groups]
