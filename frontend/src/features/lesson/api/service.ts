@@ -7,7 +7,6 @@ import { teacherSchema } from '@/features/teacher/api/service';
 import { roomSchema } from '@/features/room/api/service';
 import { groupSchema } from '@/features/group/api/service';
 import { UpdateLessonForm } from './update-lesson';
-import { DeleteLesson } from '../components/DeleteLesson';
 
 export const lessonSchema = z.object({
   id: z.number().transform((val) => val.toString()),
