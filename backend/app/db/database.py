@@ -10,10 +10,12 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, declared_attr, mapped_column
 
-from app.core.config import get_db_url
+from app.core.config import settings
 
-DATABASE_URL = get_db_url()
+DATABASE_URL = settings.db_url
+
 engine = create_async_engine(DATABASE_URL)
+
 async_session_maker = async_sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False, autoflush=False
 )
@@ -53,7 +55,6 @@ class Base(AsyncAttrs, DeclarativeBase):
         result = {}
         for column in self.__table__.columns:
             value = getattr(self, column.name)
-            # Автоматически преобразуем datetime в строку
             if isinstance(value, datetime):
                 result[column.name] = value.isoformat()
             else:

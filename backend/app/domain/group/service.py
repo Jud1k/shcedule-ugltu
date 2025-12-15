@@ -49,9 +49,9 @@ class GroupService:
         if group is None:
             raise NotFoundException("Group", group_id)
         try:
-            group = await self.group_repo.update(data=group, update_data=group_in)
+            updated_group = await self.group_repo.update(data=group, update_data=group_in)
             await self.redis.delete_key(CacheKeys.GROUPS)
-            return group
+            return updated_group
         except IntegrityError as e:
             logger.error(f"Integirity error while updating group: {str(e)}")
             raise ConflictException("Group")

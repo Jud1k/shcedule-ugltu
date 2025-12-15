@@ -1,6 +1,6 @@
 import asyncio
 from app.domain.auth.utils import get_password_hash
-from sqlalchemy import delete, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import engine

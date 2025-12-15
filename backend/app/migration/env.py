@@ -13,6 +13,7 @@ from app.db.models import *
 sys.path.insert(0, dirname(dirname(abspath(__file__))))
 
 from app.db.database import DATABASE_URL, Base
+from app.db.models import User,Teacher,Student,Subject,Lesson,Group,Building,Room
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

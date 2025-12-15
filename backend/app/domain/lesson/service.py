@@ -7,6 +7,8 @@ from app.exceptions import ConflictException, NotFoundException
 from app.domain.lesson.repository import LessonRepository
 from app.domain.lesson.schemas import LessonCreate, LessonUpdate
 from app.db.models import Lesson
+from app.core.rabbit_connection import rabbit_conn
+from app.domain.lesson.utils import get_changes
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +46,19 @@ class LessonService:
         if not lesson:
             raise NotFoundException("Lesson", lesson_id)
         try:
-            return await self.lesson_repo.update(data=lesson, update_data=lesson_in)
+            lesson_dict= lesson.to_dict()
+            old_lesson = lesson_dict.copy()
+            updated_lesson = await self.lesson_repo.update(data=lesson, update_data=lesson_in)
+            new_lesson = lesson_in.model_dump()
+            event = {
+                "event_type":"lesson.updated",
+                "lesson_id": lesson_id,
+                "old_lesson": old_lesson,
+                "new_lesson": new_lesson,
+                "changes": get_changes(old_lesson, new_lesson),
+            }
+            await rabbit_conn.publish(routing_key="lesson.updated", message=event)
+            return updated_lesson
         except IntegrityError as e:
             logger.error(f"Integirity error while updating Lesson: {str(e)}")
             raise ConflictException("Lesson")
