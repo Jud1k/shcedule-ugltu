@@ -4,9 +4,9 @@ from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
 from aiohttp import ClientSession
 from loguru import logger
-from sqlmodel import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.db import create_user, find_user
+from bot.crud import create_user, find_user
 from bot.handlers.states import RegistrationStates
 from bot.handlers.utils import get_teacher_fullname
 from bot.keyboards.inline import (
@@ -22,10 +22,10 @@ router = Router()
 
 
 @router.message(Command("register"))
-async def register_user(message: Message, db_session: Session, state: FSMContext):
+async def register_user(message: Message, db_session: AsyncSession, state: FSMContext):
     """Register user in system"""
     user_id = message.from_user.id
-    user = find_user(db_session, user_id)
+    user = await find_user(db_session, user_id)
 
     if user:
         await message.answer(
@@ -203,7 +203,7 @@ async def process_teacher_name(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(StateFilter(RegistrationStates.confirm_data), F.data == "confirm")
-async def process_confirm(callback: CallbackQuery, db_session: Session, state: FSMContext):
+async def process_confirm(callback: CallbackQuery, db_session: AsyncSession, state: FSMContext):
     """Final confirmation and user registration"""
     state_data = await state.get_data()
     role = state_data["role"]
@@ -218,7 +218,7 @@ async def process_confirm(callback: CallbackQuery, db_session: Session, state: F
         subscribed=True,
     )
     try:
-        create_user(db_session, user)
+        await create_user(db_session, user)
         await callback.answer(
             text="🎉 *Registration Complete!*\n\n✨ Welcome to USFEU Schedule System!",
         )

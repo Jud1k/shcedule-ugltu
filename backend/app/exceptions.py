@@ -7,7 +7,11 @@ class NotFoundException(HTTPException):
 
         Provides consistent formatting for "resource not found" scenarios
         with flexible messaging based on provided parameters."""
-        message = f"{record_name} not found" if record_id is None else f"{record_name} with ID {record_id} not found"
+        message = (
+            f"{record_name} not found"
+            if record_id is None
+            else f"{record_name} with ID {record_id} not found"
+        )
         super().__init__(status_code=status.HTTP_404_NOT_FOUND, detail=message, headers=headers)
 
 

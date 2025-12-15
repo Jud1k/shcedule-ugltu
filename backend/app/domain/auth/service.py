@@ -38,11 +38,11 @@ class AuthService:
         user_in.password = hashed_password
         user = await self.user_repo.create(data=user_in)
         return user
-    
-    async def update_user_password(self, user_id:uuid.UUID, new_password: str) -> None:
+
+    async def update_user_password(self, user_id: uuid.UUID, new_password: str) -> None:
         hashed_password = get_password_hash(new_password)
-        await self.user_repo.update_user_password(user_id=user_id,new_password=hashed_password)
-        
+        await self.user_repo.update_user_password(user_id=user_id, new_password=hashed_password)
+
     def create_access_token(
         self, user_id: uuid.UUID, email: str, role: str, expires_delta: timedelta
     ) -> str:
@@ -85,7 +85,7 @@ class AuthService:
             raise ValueError("Invalid token type")
         await self.redis.delete_key(f"refresh_token:{payload['jti']}")
 
-    async def validate_refresh_token(self, token: str) -> dict:    
+    async def validate_refresh_token(self, token: str) -> dict:
         try:
             payload = decode_token(token=token)
         except ExpiredSignatureError:

@@ -5,6 +5,7 @@ import uuid
 
 from contextlib import asynccontextmanager
 
+from app.core.rabbit_connection import rabbit_conn
 from fastapi import FastAPI, Request, Response, status
 from fastapi.exceptions import RequestValidationError, ResponseValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,34 +14,37 @@ from fastapi.responses import JSONResponse
 from app.configure_logging import configure_logging
 from app.cache.manager import redis_manager
 from app.router import api_router
+from app.core.config import settings
+import sentry_sdk
 
 logger = logging.getLogger(__name__)
 
 configure_logging()
 
-# sentry_sdk.init(dsn=settings.SENTRY_DSN,send_default_pii=True,enable_logs=True)
+if settings.SENTRY_DSN:
+    sentry_sdk.init(dsn=settings.SENTRY_DSN,send_default_pii=True,enable_logs=True)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await redis_manager.connect()
+    await rabbit_conn.connect()
     logger.info("Redis connected")
+    logger.info("RabbitMQ connected")
     yield
-    logger.info("Redis disconnected")
     await redis_manager.close()
+    await rabbit_conn.close()
+    logger.info("Redis disconnected")
+    logger.info("RabbitMQ disconnected")
 
 
 app = FastAPI(lifespan=lifespan)
 
-app.include_router(router=api_router,prefix="/api/v1")
-
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+app.include_router(router=api_router, prefix="/api/v1")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=settings.all_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,7 +52,7 @@ app.add_middleware(
 
 
 @app.middleware("http")
-async def log_requests(request: Request, call_next)->Response|Any:
+async def log_requests(request: Request, call_next) -> Response | Any:
     request_id = str(uuid.uuid1())
     logger.info(f"Request started | ID: {request_id} | {request.method} {request.url}")
 
@@ -64,7 +68,7 @@ async def log_requests(request: Request, call_next)->Response|Any:
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(req: Request, exc: RequestValidationError)->JSONResponse:
+async def validation_exception_handler(req: Request, exc: RequestValidationError) -> JSONResponse:
     logger.error(f"Validation error: {exc.errors()}")
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -73,7 +77,7 @@ async def validation_exception_handler(req: Request, exc: RequestValidationError
 
 
 @app.exception_handler(ResponseValidationError)
-async def validation_exception_handler2(req: Request, exc: ResponseValidationError)->JSONResponse:
+async def validation_exception_handler2(req: Request, exc: ResponseValidationError) -> JSONResponse:
     logger.error(f"Validation error: {exc.errors()}")
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
@@ -82,5 +86,5 @@ async def validation_exception_handler2(req: Request, exc: ResponseValidationErr
 
 
 @app.get("/")
-async def main_page()->dict:
+async def main_page() -> dict:
     return {"Hi": "Guys"}

@@ -14,7 +14,7 @@ class UserRepository(SqlAlchemyRepository[User]):
         user = result.scalar_one_or_none()
         return user
 
-    async def update_user_password(self,user_id:uuid.UUID,new_password:str)->None:
-        stmt = update(self.model).filter(self.model.id==user_id).values(password=new_password)
+    async def update_user_password(self, user_id: uuid.UUID, new_password: str) -> None:
+        stmt = update(self.model).filter(self.model.id == user_id).values(password=new_password)
         await self.session.execute(stmt)
         return

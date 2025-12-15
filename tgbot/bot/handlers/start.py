@@ -1,17 +1,17 @@
 from aiogram import Router
 from aiogram.types import Message
-from sqlmodel import Session, select
+from sqlalchemy.ext.asyncio import AsyncSession
 from aiogram.filters import CommandStart
 
-from bot.models import User
+from bot.crud import find_user
 
 router = Router()
 
 
 @router.message(CommandStart())
-async def cmd_start(message: Message, db_session: Session):
+async def cmd_start(message: Message, db_session: AsyncSession):
     user_id = message.from_user.id
-    user = db_session.exec(select(User).filter(User.telegram_id == user_id)).first()
+    user = await find_user(db_session, user_id)
 
     if user:
         return await message.answer(

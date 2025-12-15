@@ -30,7 +30,8 @@ def create_token(data: dict, expires_delta: timedelta | None = None) -> str:
     encoded_jwt = jwt.encode(data, key=settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
-def verify_reset_token(token: str) -> str|None:
+
+def verify_reset_token(token: str) -> str | None:
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         return payload.get("email")

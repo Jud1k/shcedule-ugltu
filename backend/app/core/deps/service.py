@@ -59,8 +59,10 @@ async def get_lesson_service(session: AsyncSession = Depends(get_db)):
 LessonServiceDep = Annotated[LessonService, Depends(get_lesson_service)]
 
 
-async def get_auth_service(session: AsyncSession = Depends(get_db),redis: CustomRedis = Depends(get_redis)):
-    return AuthService(session=session,redis=redis)
+async def get_auth_service(
+    session: AsyncSession = Depends(get_db), redis: CustomRedis = Depends(get_redis)
+):
+    return AuthService(session=session, redis=redis)
 
 
 AuthServiceDep = Annotated[AuthService, Depends(get_auth_service)]
@@ -70,4 +72,4 @@ async def get_building_service(session: AsyncSession = Depends(get_db)):
     return BuildingService(session=session)
 
 
-BuildingServiceDep = Annotated[BuildingService,Depends(get_building_service)]
+BuildingServiceDep = Annotated[BuildingService, Depends(get_building_service)]

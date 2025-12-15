@@ -7,10 +7,11 @@ from loguru import logger
 class Settings(BaseSettings):
     TELEGRAM_API_TOKEN: str
     ADMIN_ID: int
-    DATABASE_URL: str = "sqlite:///data/db.sqlite3"
+    DATABASE_URL: str
     BACKEND_API_URL: str
+    RABBITMQ_URL: str
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(env_file="../.env", env_ignore_empty=True,env_file_encoding="utf-8", extra="ignore")
 
 
 settings = Settings()
@@ -19,4 +20,4 @@ bot = Bot(token=settings.TELEGRAM_API_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 
 format_log = "{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}"
-logger.add("log.txt", format=format_log, level="INFO", rotation="10 MB")
+logger.add("bot.log", format=format_log, level="INFO", rotation="10 MB")

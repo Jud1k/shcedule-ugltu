@@ -35,7 +35,7 @@ async def test_get_user_by_id(session: AsyncSession, redis: CustomRedis, user_fa
 async def test_get_user_by_id_not_found(session: AsyncSession, redis: CustomRedis):
     service = AuthService(session, redis)
     user_id = uuid.uuid4()
-    
+
     user = await service.get_by_id(user_id)
     assert user is None
 
@@ -58,11 +58,11 @@ async def test_get_user_by_email(
 async def test_get_user_by_email_not_found(session: AsyncSession, redis: CustomRedis):
     service = AuthService(session, redis)
     email = "nonexistent@example.com"
-    
+
     user = await service.get_by_email(email)
     assert user is None
-    
-    
+
+
 @pytest.mark.asyncio
 async def test_create_user(session: AsyncSession, redis: CustomRedis):
     service = AuthService(session, redis)
@@ -85,5 +85,3 @@ async def test_update_user_password(
     new_password = "NewPassword"
     result = await service.update_user_password(user_id=created_user.id, new_password=new_password)
     assert result is None
-
-

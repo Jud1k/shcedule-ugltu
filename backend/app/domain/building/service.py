@@ -3,7 +3,7 @@ import logging
 from sqlalchemy.exc import IntegrityError
 
 from app.domain.building.repository import BuildingRepository
-from app.domain.building.schemas import BuildingCreate,BuildingUpdate
+from app.domain.building.schemas import BuildingCreate, BuildingUpdate
 from app.exceptions import ConflictException, NotFoundException
 from app.db.models import Building
 
@@ -29,7 +29,7 @@ class BuildingService:
         except IntegrityError as e:
             logger.error(f"Integirity error while created Building:{str(e)}")
             raise ConflictException("Building")
-        
+
     async def update(self, building_id: int, building_in: BuildingUpdate) -> Building:
         building = await self.building_repo.get_one_or_none_by_id(id=building_id)
         if not building:
@@ -41,8 +41,8 @@ class BuildingService:
             logger.error(f"Integirity error while updating Building:{str(e)}")
             raise ConflictException("Building")
 
-    async def delete(self, building_id: int)->None:
+    async def delete(self, building_id: int) -> None:
         building = await self.building_repo.get_one_or_none_by_id(id=building_id)
         if not building:
-            raise NotFoundException("Building",building_id)
+            raise NotFoundException("Building", building_id)
         await self.building_repo.delete(id=building_id)

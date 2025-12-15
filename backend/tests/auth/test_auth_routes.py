@@ -112,11 +112,12 @@ async def test_get_current_user(client: AsyncClient, auth_header: dict):
 async def test_refresh_token(client: AsyncClient):
     pass
 
-#REWORK LOGIC DEFINITION NEW PASSWORD
+
+# REWORK LOGIC DEFINITION NEW PASSWORD
 @pytest.mark.asyncio
 async def test_change_password(client: AsyncClient, auth_header):
     new_password = "defenitly_new_password_i_promise"
-    
+
     response = await client.patch(
         "/api/v1/change-password/", headers=auth_header, json={"new_password": new_password}
     )
@@ -159,13 +160,17 @@ async def test_expired_token(client: AsyncClient):
 
 @pytest.mark.asyncio
 # @pytest.mark.slow
-async def test_rate_limiting(client: AsyncClient, auth_header:dict):
+async def test_rate_limiting(client: AsyncClient, auth_header: dict):
     for _ in range(6):
-        response = await client.patch("/api/v1/change-password/", headers=auth_header,json={"new_password": "new_password"})
-    
-    assert response.status_code==429 # type: ignore
-        
+        response = await client.patch(
+            "/api/v1/change-password/", headers=auth_header, json={"new_password": "new_password"}
+        )
+
+    assert response.status_code == 429  # type: ignore
+
     for _ in range(6):
-        response = await client.post("/api/v1/register/", json={"email": f"test{_}@test.com", "password": "test_password"})
-    
-    assert response.status_code==429 # type: ignore
+        response = await client.post(
+            "/api/v1/register/", json={"email": f"test{_}@test.com", "password": "test_password"}
+        )
+
+    assert response.status_code == 429  # type: ignore

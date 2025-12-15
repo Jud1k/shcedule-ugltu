@@ -13,16 +13,19 @@ class RoomBase(BaseModel):
     building_id: int
 
     model_config = ConfigDict(from_attributes=True)
-    
+
+
 class RoomRead(RoomBase):
     id: int
     building: BuildingRead
     created_at: datetime
     updated_at: datetime
 
+
 class RoomReadMinimal(RoomBase):
-    id:int
-    
+    id: int
+
+
 class RoomCreate(RoomBase):
     pass
 

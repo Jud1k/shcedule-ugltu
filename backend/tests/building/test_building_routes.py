@@ -29,14 +29,14 @@ async def test_get_building(client: AsyncClient, building_factory: BuildingFacto
 
 
 @pytest.mark.asyncio
-async def test_get_building_not_found(client:AsyncClient,building_factory:BuildingFactory):
-    building_id = random.randint(1,1_000_000)
+async def test_get_building_not_found(client: AsyncClient, building_factory: BuildingFactory):
+    building_id = random.randint(1, 1_000_000)
     response = await client.get(f"/api/v1/building/{building_id}")
-    assert response.status_code==404
-    response_data=response.json()
-    assert response_data["detail"]==f"Building with ID {building_id} not found"
-    
-    
+    assert response.status_code == 404
+    response_data = response.json()
+    assert response_data["detail"] == f"Building with ID {building_id} not found"
+
+
 @pytest.mark.asyncio
 async def test_create_building(client: AsyncClient, building_factory: BuildingFactory):
     building_instance = building_factory.build()
@@ -74,9 +74,9 @@ async def test_delete_building(client: AsyncClient, building_factory: BuildingFa
 
 @pytest.mark.asyncio
 async def test_delete_building_not_found(client: AsyncClient, building_factory: BuildingFactory):
-    building_id = random.randint(1,1_000_000)
+    building_id = random.randint(1, 1_000_000)
 
     response = await client.delete(f"/api/v1/building/{building_id}")
     assert response.status_code == 404
     response_data = response.json()
-    assert response_data["detail"]==f"Building with ID {building_id} not found"
+    assert response_data["detail"] == f"Building with ID {building_id} not found"

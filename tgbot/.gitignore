@@ -7,9 +7,12 @@ wheels/
 *.egg-info
 .ruff_cache
 .mypy_cache
-log.txt
 *log
 
 # Virtual environments
 .venv
 .env
+
+data/
+db.sqlite3
+*.sqlite3

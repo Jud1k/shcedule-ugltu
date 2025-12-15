@@ -2,18 +2,18 @@ from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import Command
 from loguru import logger
-from sqlmodel import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.db import find_user, delete_user
+from bot.crud import find_user, delete_user
 
 router = Router()
 
 
 @router.message(Command("delete"))
-async def cmd_delete(message: Message, db_session: Session):
+async def cmd_delete(message: Message, db_session: AsyncSession):
     """Permanently delete user account and all associated data"""
     user_id = message.from_user.id
-    user = find_user(db_session, user_id)
+    user = await find_user(db_session, user_id)
 
     if not user:
         await message.answer(
@@ -22,9 +22,9 @@ async def cmd_delete(message: Message, db_session: Session):
             "Use /register to create an account first.",
             parse_mode="Markdown",
         )
-        return 
+        return
     try:
-        delete_user(db_session, user)
+        await delete_user(db_session, user)
         logger.info(f"User {user_id} deleted their account")
         await message.answer(
             text="🗑️ *Account Successfully Deleted*\n\n"

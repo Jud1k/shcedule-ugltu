@@ -31,9 +31,9 @@ logger = logging.getLogger(__name__)
 router = APIRouter(tags=["Auth"])
 
 
-@router.post("/register/", response_model=UserRead,status_code=status.HTTP_201_CREATED)
+@router.post("/register/", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 @limiter.limit("5/hour")
-async def register_user(request:Request,user_in: UserRegister, service: AuthServiceDep):
+async def register_user(request: Request, user_in: UserRegister, service: AuthServiceDep):
     user = await service.get_by_email(email=user_in.email)
     if user:
         raise ConflictException("User")
@@ -101,13 +101,15 @@ async def logout_user(
 @limiter.limit("5/hour")
 async def change_password(
     request: Request,
-    request_body:PasswordChange,
+    request_body: PasswordChange,
     service: AuthServiceDep,
     current_user: CurrentUser,
     refresh_token: str = Depends(get_refresh_token),
 ):
     await service.revoke_refresh_token(token=refresh_token)
-    await service.update_user_password(user_id=current_user.id, new_password=request_body.new_password)
+    await service.update_user_password(
+        user_id=current_user.id, new_password=request_body.new_password
+    )
     return {"message": "Password updated successfully"}
 
 

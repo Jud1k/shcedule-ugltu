@@ -2,18 +2,18 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
 from loguru import logger
-from sqlmodel import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.db import find_user, update_user
+from bot.crud import find_user, update_user
 
 router = Router()
 
 
 @router.message(Command("subscribe"))
-async def subscribe_user(message: Message, db_session: Session):
+async def subscribe_user(message: Message, db_session: AsyncSession):
     """Enable notifications for schedule updates and changes"""
     user_id = message.from_user.id
-    user = find_user(db_session, user_id)
+    user = await find_user(db_session, user_id)
     if not user:
         await message.answer(
             text="🔐 *Registration Required*\n\n"
@@ -31,7 +31,7 @@ async def subscribe_user(message: Message, db_session: Session):
         return
     try:
         user.subscribed = True
-        update_user(db_session, user)
+        await update_user(db_session, user)
         logger.info(f"User {user_id} subscribed to notifications")
         await message.answer(
             text="✅ *Notifications Enabled!*\n\n"
@@ -51,10 +51,10 @@ async def subscribe_user(message: Message, db_session: Session):
 
 
 @router.message(Command("unsubscribe"))
-async def unsubscribe_user(message: Message, db_session: Session):
+async def unsubscribe_user(message: Message, db_session: AsyncSession):
     """Disable all schedule notifications while keeping account active"""
     user_id = message.from_user.id
-    user = find_user(db_session, user_id)
+    user = await find_user(db_session, user_id)
 
     if not user:
         await message.answer(
@@ -74,7 +74,7 @@ async def unsubscribe_user(message: Message, db_session: Session):
         return
     try:
         user.subscribed = False
-        update_user(db_session, user)
+        await update_user(db_session, user)
         logger.info(f"User {user_id} unsubscribed from notifications")
         await message.answer(
             text="🔕 *Notifications Disabled*\n\n"

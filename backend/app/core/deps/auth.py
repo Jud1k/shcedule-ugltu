@@ -31,8 +31,8 @@ def get_refresh_token(request: Request):
 
 
 async def get_current_user(
-    service:AuthServiceDep,
-    token:str= Depends(oauth2_scheme),
+    service: AuthServiceDep,
+    token: str = Depends(oauth2_scheme),
 ) -> UserRead:
     try:
         payload = decode_token(token=token)
@@ -44,15 +44,18 @@ async def get_current_user(
         raise NoJwtException
     user = await service.get_by_id(user_id=uuid.UUID(payload["sub"]))
     if not user:
-        logger.warning(f"User with ID {payload["sub"]} not found.")
+        logger.warning(f"User with ID {payload['sub']} not found.")
         raise NotFoundException("User", payload["sub"])
     return UserRead.model_validate(user)
 
-CurrentUser = Annotated[UserRead,Depends(get_current_user)]
+
+CurrentUser = Annotated[UserRead, Depends(get_current_user)]
+
 
 async def get_current_admin_user(current_user: CurrentUser):
     if current_user.role == "admin":
         return current_user
     raise ForbiddenException
 
-AdminUser = Annotated[UserRead,Depends(get_current_admin_user)]
+
+AdminUser = Annotated[UserRead, Depends(get_current_admin_user)]
