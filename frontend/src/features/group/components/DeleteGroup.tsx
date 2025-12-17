@@ -3,7 +3,7 @@ import { useDeleteGroup } from '../api/delete-group';
 import { Button } from '@/components/generic/Button';
 
 interface DeleteGroupProps {
-  groupId: number;
+  groupId: string;
 }
 
 export const DeleteGroup = ({ groupId }: DeleteGroupProps) => {

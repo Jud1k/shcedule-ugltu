@@ -73,11 +73,13 @@ export const SearchGroup = () => {
             <Spinner />
           </List>
         )}
-        {isListOpen && !groupsSearchQuery.isLoading && groups?.length === 0 && (
-          <List>
-            <div className="p-3 text-center">Ничего не найдена</div>
-          </List>
-        )}
+        {isListOpen &&
+          !groupsSearchQuery.isLoading &&
+          (groups?.length === 0 || !groups) && (
+            <List>
+              <div className="p-3 text-center">Ничего не найдена</div>
+            </List>
+          )}
       </Combobox>
     </div>
   );
