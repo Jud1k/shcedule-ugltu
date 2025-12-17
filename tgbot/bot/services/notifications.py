@@ -12,5 +12,5 @@ async def handle_lesson_update(event_data: dict) -> None:
                 text=f"Old lesson: {event_data.get('old_lesson')}\n\n"
                 f"New lesson: {event_data.get('new_lesson')}\n\n"
                 f"Changes: {event_data.get('changes')}",
-                parse_mode="Markdown"
+                parse_mode=None
             )
