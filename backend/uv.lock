@@ -386,7 +386,7 @@ requires-dist = [
     { name = "aio-pika", specifier = ">=9.5.8" },
     { name = "alembic", specifier = ">=1.17.1" },
     { name = "asyncpg", specifier = ">=0.31.0" },
-    { name = "bcrypt", specifier = "<=4.3.0" },
+    { name = "bcrypt", specifier = "==4.3.0" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.120.2" },
     { name = "passlib", specifier = ">=1.7.4" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.12.3" },

@@ -6,7 +6,7 @@ router = Router()
 
 
 @router.message(Command("help"))
-async def cmd_help(message: Message):
+async def cmd_help(message: Message) -> None:
     await message.answer(
         text="📚 *Available commands:*\n"
         "   /start - Welcome message\n"

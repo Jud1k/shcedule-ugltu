@@ -5,7 +5,7 @@ import uuid
 
 from contextlib import asynccontextmanager
 
-from app.core.rabbit_connection import rabbit_conn
+from app.core.broker.rabbit_connection import rabbit_conn
 from fastapi import FastAPI, Request, Response, status
 from fastapi.exceptions import RequestValidationError, ResponseValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 configure_logging()
 
 if settings.SENTRY_DSN:
-    sentry_sdk.init(dsn=settings.SENTRY_DSN,send_default_pii=True,enable_logs=True)
+    sentry_sdk.init(dsn=settings.SENTRY_DSN, send_default_pii=True, enable_logs=True)
 
 
 @asynccontextmanager

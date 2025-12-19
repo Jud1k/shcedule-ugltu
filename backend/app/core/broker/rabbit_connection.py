@@ -9,7 +9,7 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 
-class RabbitConnection:
+class RabbitMQConnection:
     def __init__(self, url):
         self.url = url
         self.connection: AbstractConnection | None = None
@@ -23,7 +23,7 @@ class RabbitConnection:
             "schedule_updates", aio_pika.ExchangeType.TOPIC, durable=True
         )
 
-    async def publish(self, routing_key: int, message: dict):
+    async def publish(self, routing_key: int, message: dict) -> None:
         if not self.exchange:
             await self.connect()
         message_body = json.dumps(message).encode()
@@ -34,11 +34,18 @@ class RabbitConnection:
             timestamp=int(time.time()),
         )
         await self.exchange.publish(message=message_obj, routing_key=routing_key)
-        logger.info(f"Data sent to {routing_key}:{message.get('event_type')}")
+        logger.info(
+            "Message published",
+            extra={
+                "routing_key": routing_key,
+                "event_type": message.get("event_type"),
+                "exchange": self.exchange.name,
+            },
+        )
 
-    async def close(self):
+    async def close(self) -> None:
         if self.connection:
             await self.connection.close()
 
 
-rabbit_conn = RabbitConnection(url=settings.rabbitmq_url)
+rabbit_conn = RabbitMQConnection(url=settings.rabbitmq_url)

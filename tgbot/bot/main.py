@@ -12,7 +12,7 @@ from bot.handlers.delete import router as delete_router
 from bot.handlers.help import router as help_router
 from bot.handlers.subscription import router as subscription_router
 from bot.core.consumer import RabbitMQConsumer
-from bot.services.notifications import handle_lesson_update
+from bot.tasks.router import message_router
 
 
 async def set_default_commands() -> None:
@@ -40,6 +40,10 @@ async def on_startup() -> None:
 
 
 async def on_shutdown() -> None:
+    try:
+        await bot.send_message(chat_id=settings.ADMIN_ID, text="I'm stopped working!!!")
+    except Exception as e:
+        logger.error(f"Error while sending message to admin:{str(e)}")
     logger.info("Bot stopped!")
 
 
@@ -63,7 +67,7 @@ async def main() -> None:
         consumer.consume_queue(
             queue_name="telegram_notifications",
             routing_keys=["lesson.#"],
-            handler=handle_lesson_update,
+            message_router=message_router,
         )
     )
     try:
@@ -73,8 +77,8 @@ async def main() -> None:
     finally:
         await bot.session.close()
         await client_session.close()
-        worker_task.cancel()
         await consumer.close()
+        worker_task.cancel()
 
 
 if __name__ == "__main__":

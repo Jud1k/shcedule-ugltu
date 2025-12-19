@@ -1,14 +1,14 @@
 import logging
 
+from app.core.events.lesson import LessonUpdatedEvent
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.exceptions import ConflictException, NotFoundException
 from app.domain.lesson.repository import LessonRepository
-from app.domain.lesson.schemas import LessonCreate, LessonUpdate
+from app.domain.lesson.schemas import LessonCreate, LessonRead, LessonUpdate
 from app.db.models import Lesson
-from app.core.rabbit_connection import rabbit_conn
-from app.domain.lesson.utils import get_changes
+from app.core.broker.rabbit_connection import rabbit_conn
 
 logger = logging.getLogger(__name__)
 
@@ -42,22 +42,26 @@ class LessonService:
             raise ConflictException("Lesson")
 
     async def update(self, lesson_id: int, lesson_in: LessonUpdate) -> Lesson:
-        lesson = await self.lesson_repo.get_one_or_none_by_id(id=lesson_id)
+        lesson = await self.lesson_repo.get_lesson(lesson_id=lesson_id)
         if not lesson:
             raise NotFoundException("Lesson", lesson_id)
         try:
-            lesson_dict= lesson.to_dict()
-            old_lesson = lesson_dict.copy()
+            old_lesson = LessonRead.model_validate(lesson, from_attributes=True)
             updated_lesson = await self.lesson_repo.update(data=lesson, update_data=lesson_in)
-            new_lesson = lesson_in.model_dump()
-            event = {
-                "event_type":"lesson.updated",
-                "lesson_id": lesson_id,
-                "old_lesson": old_lesson,
-                "new_lesson": new_lesson,
-                "changes": get_changes(old_lesson, new_lesson),
-            }
-            await rabbit_conn.publish(routing_key="lesson.updated", message=event)
+            new_lesson = await self.lesson_repo.get_lesson(updated_lesson.id)
+            if not new_lesson:
+                raise NotFoundException("Lesson", lesson_id)
+            new_lesson = LessonRead.model_validate(new_lesson, from_attributes=True)
+
+            event = LessonUpdatedEvent(
+                lesson_id=lesson_id,
+                group_id=lesson_in.group_id,
+                teacher_id=lesson_in.teacher_id,
+                old_lesson=old_lesson,
+                new_leson=new_lesson,
+            )
+            event_dict = event.model_dump(mode="json")
+            await rabbit_conn.publish(routing_key="lesson.updated", message=event_dict)
             return updated_lesson
         except IntegrityError as e:
             logger.error(f"Integirity error while updating Lesson: {str(e)}")

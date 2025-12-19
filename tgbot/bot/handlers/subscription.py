@@ -4,16 +4,17 @@ from aiogram.types import Message
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.crud import find_user, update_user
+from bot.crud import find_user_by_tg_id, update_user
+from bot.services.schemas import UserUpdate
 
 router = Router()
 
 
 @router.message(Command("subscribe"))
-async def subscribe_user(message: Message, db_session: AsyncSession):
+async def subscribe_user(message: Message, db_session: AsyncSession) -> None:
     """Enable notifications for schedule updates and changes"""
     user_id = message.from_user.id
-    user = await find_user(db_session, user_id)
+    user = await find_user_by_tg_id(db_session, user_id)
     if not user:
         await message.answer(
             text="🔐 *Registration Required*\n\n"
@@ -30,8 +31,8 @@ async def subscribe_user(message: Message, db_session: AsyncSession):
         )
         return
     try:
-        user.subscribed = True
-        await update_user(db_session, user)
+        update_user_data = UserUpdate(subscribed=True)
+        await update_user(db_session, user, update_user_data)
         logger.info(f"User {user_id} subscribed to notifications")
         await message.answer(
             text="✅ *Notifications Enabled!*\n\n"
@@ -51,10 +52,10 @@ async def subscribe_user(message: Message, db_session: AsyncSession):
 
 
 @router.message(Command("unsubscribe"))
-async def unsubscribe_user(message: Message, db_session: AsyncSession):
+async def unsubscribe_user(message: Message, db_session: AsyncSession) -> None:
     """Disable all schedule notifications while keeping account active"""
     user_id = message.from_user.id
-    user = await find_user(db_session, user_id)
+    user = await find_user_by_tg_id(db_session, user_id)
 
     if not user:
         await message.answer(
@@ -73,8 +74,8 @@ async def unsubscribe_user(message: Message, db_session: AsyncSession):
         )
         return
     try:
-        user.subscribed = False
-        await update_user(db_session, user)
+        update_user_data = UserUpdate(subscribed=True)
+        await update_user(db_session, user, update_user_data)
         logger.info(f"User {user_id} unsubscribed from notifications")
         await message.answer(
             text="🔕 *Notifications Disabled*\n\n"

@@ -9,6 +9,18 @@ class LessonRepository(SqlAlchemyRepository[Lesson]):
     model = Lesson
 
     async def get_lessons(self) -> list[Lesson]:
+        stmt = select(self.model).options(
+            joinedload(self.model.group),
+            joinedload(self.model.room),
+            joinedload(self.model.subject),
+            joinedload(self.model.teacher),
+        )
+
+        result = await self.session.execute(stmt)
+        lessons = list(result.scalars().all())
+        return lessons
+
+    async def get_lesson(self, lesson_id: int) -> Lesson | None:
         stmt = (
             select(self.model)
             .options(
@@ -17,12 +29,11 @@ class LessonRepository(SqlAlchemyRepository[Lesson]):
                 joinedload(self.model.subject),
                 joinedload(self.model.teacher),
             )
-            .order_by(self.model.day_of_week)
+            .filter(Lesson.id == lesson_id)
         )
-
         result = await self.session.execute(stmt)
-        lessons = list(result.scalars().all())
-        return lessons
+        lesson = result.scalar_one_or_none()
+        return lesson
 
     async def get_lessons_by_group_id(
         self,

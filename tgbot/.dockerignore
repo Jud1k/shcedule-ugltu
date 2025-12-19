@@ -1,0 +1,23 @@
+# Игнорировать папки __pycache__
+__pycache__/
+.pytest_cache
+
+# Игнорировать скомпилированные файлы Python
+*.pyc
+*.pyo
+*.pyd
+
+# Игнорировать виртуальное окружение
+venv/
+env/
+.venv/
+
+# Игнорировать файлы журналов и кэша
+*.log
+*.cache
+.ruff_cache
+.mypy_cache
+
+.bashrc
+
+bot.pid

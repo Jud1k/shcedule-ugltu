@@ -3,23 +3,24 @@ from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 from aiogram.filters import CommandStart
 
-from bot.crud import find_user
+from bot.crud import find_user_by_tg_id
 
 router = Router()
 
 
 @router.message(CommandStart())
-async def cmd_start(message: Message, db_session: AsyncSession):
+async def cmd_start(message: Message, db_session: AsyncSession) -> None:
     user_id = message.from_user.id
-    user = await find_user(db_session, user_id)
+    user = await find_user_by_tg_id(db_session, user_id)
 
     if user:
-        return await message.answer(
+        await message.answer(
             f"👋 Welcome back, {message.from_user.full_name}!\n\n"
             f"🎓 You are registered as a {user.role}\n"
             f"🔔 Notifications: {'✅ Enabled' if user.subscribed else '❌ Disabled'}\n\n"
             f"Use /help to see all available commands!"
         )
+        return
     else:
         await message.answer(
             text="Welcome to bot!\n"

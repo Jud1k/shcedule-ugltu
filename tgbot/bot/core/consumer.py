@@ -1,5 +1,4 @@
 from contextlib import asynccontextmanager
-import json
 from typing import AsyncGenerator, Awaitable, Callable
 import aio_pika
 from aio_pika.abc import AbstractConnection, AbstractChannel
@@ -27,8 +26,8 @@ class RabbitMQConsumer:
     async def consume_queue(
         self,
         queue_name: str,
-        handler: Callable[[dict], Awaitable[None]],
-        routing_keys: list[str] = None,
+        message_router: Callable[[dict], Awaitable[None]],
+        routing_keys: list[str] | None = None,
     ) -> None:
         async with self._get_channel() as channel:
             await channel.set_qos(prefetch_count=10)
@@ -50,14 +49,9 @@ class RabbitMQConsumer:
             logger.info(f"Started consuming {queue_name}")
             async with queue.iterator() as queue_iter:
                 async for message in queue_iter:
-                    async with message.process():
-                        try:
-                            body = json.loads(message.body.decode())
-                            await handler(body)
-                        except Exception as e:
-                            logger.error(f"Message processing failed: {e}")
-                            await message.nack(requeue=False)
+                    await message_router(message)
 
-    async def close(self):
+    async def close(self) -> None:
         if self.connection:
             await self.connection.close()
+            logger.info("Stop consuming")

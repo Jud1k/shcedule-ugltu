@@ -6,26 +6,26 @@ from aiohttp import ClientSession
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.crud import create_user, find_user
+from bot.crud import create_user, find_user_by_tg_id
 from bot.handlers.states import RegistrationStates
-from bot.handlers.utils import get_teacher_fullname
+from bot.services.utils import get_teacher_fullname
 from bot.keyboards.inline import (
     get_confirmation_keyboard,
     get_groups_keyboard,
     get_role_keyboard,
     get_teachers_keyboard,
 )
-from bot.models import User
 from bot.services.api import get_groups, get_teachers
+from bot.services.schemas import Teacher, UserCreate
 
 router = Router()
 
 
 @router.message(Command("register"))
-async def register_user(message: Message, db_session: AsyncSession, state: FSMContext):
+async def register_user(message: Message, db_session: AsyncSession, state: FSMContext) -> None:
     """Register user in system"""
     user_id = message.from_user.id
-    user = await find_user(db_session, user_id)
+    user = await find_user_by_tg_id(db_session, user_id)
 
     if user:
         await message.answer(
@@ -55,7 +55,7 @@ async def register_user(message: Message, db_session: AsyncSession, state: FSMCo
 @router.callback_query(StateFilter(RegistrationStates.choose_role), F.data == "role_student")
 async def process_student_role(
     callback: CallbackQuery, client_session: ClientSession, state: FSMContext
-):
+) -> None:
     """User selects student role"""
     await callback.answer()
     await state.update_data(role="student")
@@ -84,7 +84,7 @@ async def process_student_role(
 @router.callback_query(
     StateFilter(RegistrationStates.student_group), F.data.startswith("groups_page:")
 )
-async def process_groups_page(callback: CallbackQuery, state: FSMContext):
+async def process_groups_page(callback: CallbackQuery, state: FSMContext) -> None:
     page = int(callback.data.split(":")[1])
     state_data = await state.get_data()
     groups = state_data.get("groups", [])
@@ -97,7 +97,7 @@ async def process_groups_page(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(
     StateFilter(RegistrationStates.student_group), F.data.startswith("select_group:")
 )
-async def process_student_group(callback: CallbackQuery, state: FSMContext):
+async def process_student_group(callback: CallbackQuery, state: FSMContext) -> None:
     """Student selects their group"""
     group_id = callback.data.split(":")[1]
     state_data = await state.get_data()
@@ -131,7 +131,7 @@ async def process_student_group(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(StateFilter(RegistrationStates.choose_role), F.data == "role_teacher")
 async def process_teacher_role(
     callback: CallbackQuery, client_session: ClientSession, state: FSMContext
-):
+) -> None:
     """User selects teacher role"""
     await state.update_data(role="teacher")
     teachers = await get_teachers(client_session)
@@ -143,7 +143,7 @@ async def process_teacher_role(
             "📝 *Please select your name from the faculty list:*\n\n"
             "🔍 Use the buttons below to find yourself.",
             parse_mode="Markdown",
-            reply_markup=get_teachers_keyboard(teachers_dict),
+            reply_markup=get_teachers_keyboard(teachers),
         )
         await state.set_state(RegistrationStates.teacher_select)
     else:
@@ -159,12 +159,12 @@ async def process_teacher_role(
 @router.callback_query(
     StateFilter(RegistrationStates.teacher_select), F.data.startswith("teachers_page:")
 )
-async def process_teachers_pages(callback: CallbackQuery, state: FSMContext):
+async def process_teachers_pages(callback: CallbackQuery, state: FSMContext) -> None:
     """Pagination for teachers list"""
     page = int(callback.data.split(":")[1])
     state_data = await state.get_data()
-    teachers = state_data.get("teachers", [])
-
+    teachers_dict = state_data.get("teachers", [])
+    teachers = [Teacher.model_validate(teacher) for teacher in teachers_dict]
     await callback.message.edit_reply_markup(reply_markup=get_teachers_keyboard(teachers, page))
     await callback.answer()
 
@@ -172,7 +172,7 @@ async def process_teachers_pages(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(
     StateFilter(RegistrationStates.teacher_select), F.data.startswith("select_teacher:")
 )
-async def process_teacher_name(callback: CallbackQuery, state: FSMContext):
+async def process_teacher_name(callback: CallbackQuery, state: FSMContext) -> None:
     """Teacher selects their name"""
     teacher_id = callback.data.split(":")[1]
     await state.update_data(teacher_id=teacher_id)
@@ -203,13 +203,15 @@ async def process_teacher_name(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(StateFilter(RegistrationStates.confirm_data), F.data == "confirm")
-async def process_confirm(callback: CallbackQuery, db_session: AsyncSession, state: FSMContext):
+async def process_confirm(
+    callback: CallbackQuery, db_session: AsyncSession, state: FSMContext
+) -> None:
     """Final confirmation and user registration"""
     state_data = await state.get_data()
     role = state_data["role"]
     group_id = state_data.get("group_id", None)
     teacher_id = state_data.get("teacher_id", None)
-    user = User(
+    user = UserCreate(
         telegram_id=callback.from_user.id,
         username=callback.from_user.username,
         role=role,
@@ -240,7 +242,7 @@ async def process_confirm(callback: CallbackQuery, db_session: AsyncSession, sta
 
 
 @router.callback_query(StateFilter(RegistrationStates.confirm_data), F.data == "cancel")
-async def process_cancel(callback: CallbackQuery, state: FSMContext):
+async def process_cancel(callback: CallbackQuery, state: FSMContext) -> None:
     """Cancel registration process"""
     await state.clear()
     await callback.answer(text="🔄 Registration cancelled")
@@ -256,7 +258,7 @@ async def process_cancel(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(StateFilter(RegistrationStates.confirm_data), F.data == "back_to_selection")
-async def back_to_selection(callback: CallbackQuery, state: FSMContext):
+async def back_to_selection(callback: CallbackQuery, state: FSMContext) -> None:
     """Return to role selection from confirmation"""
     await state.set_state(RegistrationStates.choose_role)
 

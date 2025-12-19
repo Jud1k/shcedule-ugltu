@@ -1,7 +1,8 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.handlers.utils import get_teacher_fullname
+from bot.services.utils import get_teacher_fullname
+from bot.services.schemas import Teacher
 
 
 def get_role_keyboard() -> InlineKeyboardMarkup:
@@ -42,7 +43,9 @@ def get_groups_keyboard(groups: list, page: int = 0, page_size: int = 5) -> Inli
     return kb.as_markup()
 
 
-def get_teachers_keyboard(teachers: list, page=0, page_size=5) -> InlineKeyboardMarkup:
+def get_teachers_keyboard(
+    teachers: list[Teacher], page: int = 0, page_size: int = 5
+) -> InlineKeyboardMarkup:
     """Create keyboard with pagination for teachers"""
     total = len(teachers)
     pages = max(1, (total + page_size - 1) // page_size)
