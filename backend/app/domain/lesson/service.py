@@ -8,14 +8,15 @@ from app.exceptions import ConflictException, NotFoundException
 from app.domain.lesson.repository import LessonRepository
 from app.domain.lesson.schemas import LessonCreate, LessonRead, LessonUpdate
 from app.db.models import Lesson
-from app.core.broker.rabbit_connection import rabbit_conn
+from app.core.broker.connection import RabbitMQConnection
 
 logger = logging.getLogger(__name__)
 
 
 class LessonService:
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession, broker: RabbitMQConnection):
         self.lesson_repo = LessonRepository(session)
+        self.broker = broker
 
     async def get_all(self) -> list[Lesson]:
         return await self.lesson_repo.get_lessons()
@@ -58,10 +59,10 @@ class LessonService:
                 group_id=lesson_in.group_id,
                 teacher_id=lesson_in.teacher_id,
                 old_lesson=old_lesson,
-                new_leson=new_lesson,
+                new_lesson=new_lesson,
             )
             event_dict = event.model_dump(mode="json")
-            await rabbit_conn.publish(routing_key="lesson.updated", message=event_dict)
+            await self.broker.publish(routing_key="lesson.updated", message=event_dict)
             return updated_lesson
         except IntegrityError as e:
             logger.error(f"Integirity error while updating Lesson: {str(e)}")
