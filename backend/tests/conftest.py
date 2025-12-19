@@ -1,4 +1,5 @@
 from typing import AsyncGenerator
+from backend.app.core.broker.connection import RabbitMQConnection
 from httpx import ASGITransport, AsyncClient
 import pytest
 
@@ -74,17 +75,29 @@ async def redis() -> AsyncGenerator[CustomRedis, None]:
 
 
 @pytest.fixture(scope="function")
-async def client(session: AsyncSession, redis: CustomRedis) -> AsyncGenerator[AsyncClient, None]:
+async def broker() -> RabbitMQConnection:
+    from app.core.config import settings
+
+    broker = RabbitMQConnection(url=settings.rabbitmq_url)
+    return broker
+
+
+@pytest.fixture(scope="function")
+async def client(
+    session: AsyncSession, redis: CustomRedis, broker: RabbitMQConnection
+) -> AsyncGenerator[AsyncClient, None]:
     import logging
     from app.main import app
     from app.limiter import limiter
     from app.db.database import get_db
     from app.cache.manager import get_redis
+    from app.core.broker.dep import get_broker
 
     logging.getLogger("httpx").disabled = True
     limiter.reset()
     app.dependency_overrides[get_db] = lambda: session
     app.dependency_overrides[get_redis] = lambda: redis
+    app.dependency_overrides[get_broker] = lambda: broker
     try:
         async with AsyncClient(
             transport=ASGITransport(app=app), base_url="http://test"
