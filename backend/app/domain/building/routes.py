@@ -1,6 +1,5 @@
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, status
 
-from app.core.deps.auth import get_current_admin_user
 from app.domain.building.schemas import BuildingCreate, BuildingRead, BuildingUpdate
 from app.core.deps.service import BuildingServiceDep
 from app.exceptions import NotFoundException
