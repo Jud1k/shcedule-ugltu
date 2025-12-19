@@ -26,6 +26,7 @@ async def init():
         building_in = BuildingCreate(name="ГУК", address="Сибирский тракт 38")
         result = await session.execute(select(Building).where(Building.name == building_in.name))
         building = result.scalar_one_or_none()
+
         if not building:
             building_repo = BuildingRepository(session)
             await building_repo.create(building_in)

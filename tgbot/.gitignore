@@ -16,3 +16,5 @@ wheels/
 data/
 db.sqlite3
 *.sqlite3
+
+bot.pid

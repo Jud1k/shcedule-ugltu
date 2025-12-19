@@ -4,16 +4,16 @@ from aiogram.filters import Command
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.crud import find_user, delete_user
+from bot.crud import find_user_by_tg_id, delete_user
 
 router = Router()
 
 
 @router.message(Command("delete"))
-async def cmd_delete(message: Message, db_session: AsyncSession):
+async def cmd_delete(message: Message, db_session: AsyncSession) -> None:
     """Permanently delete user account and all associated data"""
     user_id = message.from_user.id
-    user = await find_user(db_session, user_id)
+    user = await find_user_by_tg_id(db_session, user_id)
 
     if not user:
         await message.answer(

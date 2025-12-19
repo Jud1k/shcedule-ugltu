@@ -5,7 +5,7 @@ import uuid
 
 from contextlib import asynccontextmanager
 
-from app.core.rabbit_connection import rabbit_conn
+from app.core.broker.rabbit_connection import rabbit_conn
 from fastapi import FastAPI, Request, Response, status
 from fastapi.exceptions import RequestValidationError, ResponseValidationError
 from fastapi.middleware.cors import CORSMiddleware

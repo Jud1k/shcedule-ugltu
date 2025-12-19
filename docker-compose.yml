@@ -11,50 +11,6 @@ services:
                 condition: service_healthy
         restart: "no"
         command: bash scripts/prestart.sh
-    backend:
-        build:
-            context: ./backend
-        ports:
-            - "8000:8000"
-        env_file:
-            - .env
-        environment:
-            - DB_HOST=db
-            - DB_PORT=${DB_PORT}
-            - DB_USER=${DB_USER}
-            - DB_PASSWORD=${DB_PASSWORD}
-            - DB_NAME=${DB_NAME}
-            - REDIS_HOST=redis
-            - REDIS_PORT=${REDIS_PORT}
-            - REDIS_SSL=${REDIS_SSL}
-            - FIRST_SUPERUSER=${FIRST_SUPERUSER}
-            - FIRST_SUPERUSER_PASSWORD=${FIRST_SUPERUSER_PASSWORD}
-            - FRONTEND_HOST=http://frontend:3000
-            - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
-            - SECRET_KEY=${SECRET_KEY}
-            - ALGORITHM=${ALGORITHM}
-            - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
-            - REFRESH_TOKEN_EXPIRE_MINUTES=${REFRESH_TOKEN_EXPIRE_MINUTES}
-            - RABBITMQ_USER=${RABBITMQ_USER}
-            - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
-            - RABBITMQ_HOST=rabbitmq
-            - RABBITMQ_PORT=${RABBITMQ_PORT}
-        depends_on:
-            prestart:
-                condition: service_started
-            db:
-                condition: service_healthy
-            redis:
-                condition: service_healthy
-            rabbitmq:
-                condition: service_healthy
-        restart: unless-stopped
-        healthcheck:
-            test: ["CMD", "curl", "-f", "http://backend:8000/api/v1/utils/health-check/"]
-            interval: 10s
-            timeout: 5s
-            retries: 3
-            start_period: 60s 
     db:
         image: postgres:16.8-alpine
         env_file:
@@ -103,21 +59,83 @@ services:
             timeout: 30s
             retries: 5
             start_period: 40s
-    telegram-bot:
+    tg-bot:
         build: ./tgbot
         env_file:
             - .env
         environment:
             - TELEGRAM_API_TOKEN=${TELEGRAM_API_TOKEN}
             - ADMIN_ID=${ADMIN_ID}
-            - BACKEND_API_URL=${BACKEND_API_URL}
-            - RABBITMQ_URL=${RABBITMQ_URL}
+            - BACKEND_API_URL=http://backend:8000/api/v1
+            - RABBITMQ_URL=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672/ 
             - DATABASE_URL=${DATABASE_URL}
+        develop:
+          watch: 
+            - action: sync
+              path: ./tgbot
+              target: /app
+              ignore: 
+                - .venv/
+            - action: rebuild
+              path: ./tgbot/uv.lock
         depends_on:
             backend: 
                 condition: service_started
             rabbitmq:
                 condition: service_healthy
+    backend:
+        build:
+            context: ./backend
+        ports:
+            - "8000:8000"
+        env_file:
+            - .env
+        environment:
+            - DB_HOST=db
+            - DB_PORT=${DB_PORT}
+            - DB_USER=${DB_USER}
+            - DB_PASSWORD=${DB_PASSWORD}
+            - DB_NAME=${DB_NAME}
+            - REDIS_HOST=redis
+            - REDIS_PORT=${REDIS_PORT}
+            - REDIS_SSL=${REDIS_SSL}
+            - FIRST_SUPERUSER=${FIRST_SUPERUSER}
+            - FIRST_SUPERUSER_PASSWORD=${FIRST_SUPERUSER_PASSWORD}
+            - FRONTEND_HOST=http://frontend:3000
+            - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
+            - SECRET_KEY=${SECRET_KEY}
+            - ALGORITHM=${ALGORITHM}
+            - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+            - REFRESH_TOKEN_EXPIRE_MINUTES=${REFRESH_TOKEN_EXPIRE_MINUTES}
+            - RABBITMQ_USER=${RABBITMQ_USER}
+            - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+            - RABBITMQ_HOST=rabbitmq
+            - RABBITMQ_PORT=${RABBITMQ_PORT}
+        depends_on:
+            prestart:
+                condition: service_started
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
+        develop:
+          watch: 
+            - action: sync
+              path: ./backend
+              target: /app
+              ignore: 
+                - .venv/
+            - action: rebuild
+              path: ./backend/uv.lock
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://backend:8000/api/v1/utils/health-check/"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
+            start_period: 60s 
     frontend:
         build:
             context: ./frontend
@@ -126,6 +144,9 @@ services:
         ports:
             - "3000:80"
         restart: always
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
         depends_on:
             backend:
                 condition: service_started

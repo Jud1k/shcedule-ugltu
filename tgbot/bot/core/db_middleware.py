@@ -11,7 +11,7 @@ class DatabaseMiddleware(BaseMiddleware):
         handler: Callable[[Message | CallbackQuery, dict[str, Any]], Awaitable[Any]],
         event: Message | CallbackQuery,
         data: dict[str, Any],
-    ):
+    ) -> Any:
         async with async_session_maker() as db_session:
             data["db_session"] = db_session
             try:

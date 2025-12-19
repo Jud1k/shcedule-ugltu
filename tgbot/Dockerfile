@@ -3,6 +3,8 @@ FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
 WORKDIR /app/
 
+ENV UV_NO_DEV=0
+
 # Enable bytecode compilation
 ENV UV_COMPILE_BYTECODE=1
 
@@ -21,7 +23,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 COPY . /app
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync
+    uv sync --locked
 
 ENV PATH="/app/.venv/bin:$PATH"
 
@@ -29,4 +31,4 @@ ENV PYTHONPATH=/app
 
 ENTRYPOINT []
 
-CMD ["python","-m","bot.main"]
+CMD ["uv","run","python","-m","bot.main"]

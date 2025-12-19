@@ -40,5 +40,5 @@ async def init_db() -> None:
 
 
 def delete_all_users() -> TextClause:
-    query = text("DELETE FROM user WHERE id>0")
+    query = text("DELETE FROM users WHERE id>0")
     return query

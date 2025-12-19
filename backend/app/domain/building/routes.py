@@ -6,9 +6,7 @@ from app.core.deps.service import BuildingServiceDep
 from app.exceptions import NotFoundException
 
 
-router = APIRouter(
-    prefix="/building", tags=["Building"], dependencies=[Depends(get_current_admin_user)]
-)
+router = APIRouter(prefix="/building", tags=["Building"])
 
 
 @router.get("/", response_model=list[BuildingRead])
