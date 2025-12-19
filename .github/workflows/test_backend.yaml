@@ -16,8 +16,6 @@ jobs:
       ADMIN_ID: ${{ secrets.ADMIN_ID }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       DB_PORT: ${{ secrets.DB_PORT }}
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       DB_NAME: ${{ secrets.DB_NAME }}
       REDIS_PORT: ${{ secrets.REDIS_PORT }}
       REDIS_SSL: ${{ secrets.REDIS_SSL }}
