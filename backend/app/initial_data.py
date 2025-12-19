@@ -23,13 +23,14 @@ async def init():
             )
             user_repo = UserRepository(session)
             await user_repo.create(user_in)
-        building_in = BuildingCreate(name="ГУК",address="Сибирский тракт 38")
-        result = await session.execute(select(Building).where(Building.name==building_in.name))
+        building_in = BuildingCreate(name="ГУК", address="Сибирский тракт 38")
+        result = await session.execute(select(Building).where(Building.name == building_in.name))
         building = result.scalar_one_or_none()
         if not building:
             building_repo = BuildingRepository(session)
             await building_repo.create(building_in)
         await session.commit()
+
 
 async def main():
     print("Creating initial data")

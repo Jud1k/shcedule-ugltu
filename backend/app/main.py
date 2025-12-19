@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 configure_logging()
 
 if settings.SENTRY_DSN:
-    sentry_sdk.init(dsn=settings.SENTRY_DSN,send_default_pii=True,enable_logs=True)
+    sentry_sdk.init(dsn=settings.SENTRY_DSN, send_default_pii=True, enable_logs=True)
 
 
 @asynccontextmanager

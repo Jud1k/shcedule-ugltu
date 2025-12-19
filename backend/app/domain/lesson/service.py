@@ -46,12 +46,12 @@ class LessonService:
         if not lesson:
             raise NotFoundException("Lesson", lesson_id)
         try:
-            lesson_dict= lesson.to_dict()
+            lesson_dict = lesson.to_dict()
             old_lesson = lesson_dict.copy()
             updated_lesson = await self.lesson_repo.update(data=lesson, update_data=lesson_in)
             new_lesson = lesson_in.model_dump()
             event = {
-                "event_type":"lesson.updated",
+                "event_type": "lesson.updated",
                 "lesson_id": lesson_id,
                 "old_lesson": old_lesson,
                 "new_lesson": new_lesson,
