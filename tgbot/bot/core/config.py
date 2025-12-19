@@ -11,7 +11,9 @@ class Settings(BaseSettings):
     BACKEND_API_URL: str
     RABBITMQ_URL: str
 
-    model_config = SettingsConfigDict(env_file="../.env", env_ignore_empty=True,env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file="../.env", env_ignore_empty=True, env_file_encoding="utf-8", extra="ignore"
+    )
 
 
 settings = Settings()
