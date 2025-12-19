@@ -4,7 +4,6 @@ import time
 import aio_pika
 from aio_pika.abc import AbstractConnection, AbstractChannel, AbstractExchange
 
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +45,3 @@ class RabbitMQConnection:
     async def close(self) -> None:
         if self.connection:
             await self.connection.close()
-
-
-rabbit_conn = RabbitMQConnection(url=settings.rabbitmq_url)
