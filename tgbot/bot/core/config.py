@@ -8,8 +8,8 @@ class Settings(BaseSettings):
     TELEGRAM_API_TOKEN: str
     ADMIN_ID: int
     DATABASE_URL: str
-    BACKEND_API_URL: str
-    RABBITMQ_URL: str
+    BACKEND_API_URL: str = "http://localhost:8000/api/v1"
+    RABBITMQ_URL: str = "amqp://guest:guest@localhost:5672/"
 
     model_config = SettingsConfigDict(
         env_file="../.env", env_ignore_empty=True, env_file_encoding="utf-8", extra="ignore"
