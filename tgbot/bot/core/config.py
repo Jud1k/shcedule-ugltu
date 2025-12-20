@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     BACKEND_API_URL: str = "http://localhost:8000/api/v1"
     RABBITMQ_USER: str
     RABBITMQ_PASSWORD: str
-    RABBITMQ_HOST: str
+    RABBITMQ_HOST: str = "localhost"
     RABBITMQ_PORT: int
     
     @computed_field

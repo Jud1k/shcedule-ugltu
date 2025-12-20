@@ -7,9 +7,6 @@ jobs:
   test-backend:
     runs-on: ubuntu-latest
     env:
-      DB_HOST: db
-      REDIS_HOST: redis
-      RABBITMQ_HOST: rabbitmq
       FRONTEND_HOST: http://localhost:5173
       DB_USER: ${{ secrets.DB_USER }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
