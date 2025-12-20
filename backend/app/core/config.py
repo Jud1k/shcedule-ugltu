@@ -34,7 +34,7 @@ class Setting(BaseSettings):
     RABBITMQ_USER: str
     RABBITMQ_PASSWORD: str
     RABBITMQ_HOST: str
-    RABBITMQ_PORT: str
+    RABBITMQ_PORT: int
     FRONTEND_HOST: str
     BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)]
 
