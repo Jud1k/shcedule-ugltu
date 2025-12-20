@@ -12,7 +12,7 @@ class CustomRedis(Redis):
     """Extended Redis class with additional methods"""
 
     async def delete_key(self, key: str):
-        """"Deletes a key from Redis."""
+        """ "Deletes a key from Redis."""
         await self.delete(key)
         logger.info(f"Key {key} deleted")
 
@@ -86,7 +86,7 @@ class CustomRedis(Redis):
             data = await fetch_data_func(*args, **kwargs)
             if data is None:
                 return data
-            
+
             if isinstance(data, list):
                 processed_data = [
                     item.to_dict() if hasattr(item, "to_dict") else item for item in data

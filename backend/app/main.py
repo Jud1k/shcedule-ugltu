@@ -5,7 +5,7 @@ import uuid
 
 from contextlib import asynccontextmanager
 
-from app.core.broker.dep import broker_publisher
+from app.core.broker.dep import message_publisher
 from fastapi import FastAPI, Request, Response, status
 from fastapi.exceptions import RequestValidationError, ResponseValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -28,12 +28,12 @@ if settings.SENTRY_DSN:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await redis_manager.connect()
-    await broker_publisher.connect()
+    await message_publisher.connect()
     logger.info("Redis connected")
     logger.info("RabbitMQ connected")
     yield
     await redis_manager.close()
-    await broker_publisher.close()
+    await message_publisher.close()
     logger.info("Redis disconnected")
     logger.info("RabbitMQ disconnected")
 
