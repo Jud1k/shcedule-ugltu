@@ -5,7 +5,7 @@ from app.exceptions import ConflictException, NotFoundException
 from app.domain.lesson.schemas import LessonCreate, LessonUpdate
 from app.domain.lesson.service import LessonService
 from tests.factories import LessonFactory
-from backend.app.core.broker.connection import RabbitMQConnection
+from app.core.broker.connection import RabbitMQConnection
 
 
 @pytest.mark.asyncio

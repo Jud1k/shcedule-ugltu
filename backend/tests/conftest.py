@@ -1,5 +1,5 @@
 from typing import AsyncGenerator
-from backend.app.core.broker.connection import RabbitMQConnection
+from app.core.broker.connection import RabbitMQConnection
 from httpx import ASGITransport, AsyncClient
 import pytest
 
