@@ -12,18 +12,21 @@ class RabbitMQConnection:
     def __init__(self, url):
         self.url = url
         self.connection: AbstractConnection | None = None
-        self.chanel: AbstractChannel = None
-        self.exchange: AbstractExchange = None
+        self.chanel: AbstractChannel
+        self.exchange: AbstractExchange
 
     async def connect(self) -> None:
         self.connection = await aio_pika.connect_robust(self.url)
+        if self.connection is None:
+            raise ConnectionError("Failed to initialize RabbitMQ connection")
+        await self.connection.ready()
         self.chanel = await self.connection.channel()
         self.exchange = await self.chanel.declare_exchange(
             "schedule_updates", aio_pika.ExchangeType.TOPIC, durable=True
         )
 
-    async def publish(self, routing_key: int, message: dict) -> None:
-        if not self.exchange:
+    async def publish(self, routing_key: str, message: dict) -> None:
+        if not self.exchange or not self.connection:
             await self.connect()
         message_body = json.dumps(message).encode()
         message_obj = aio_pika.Message(

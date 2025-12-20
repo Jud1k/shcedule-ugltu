@@ -9,7 +9,7 @@ class RabbitMQPublisher:
         self.rabbitmq_url = rabbitmq_url
         self.broker = None
 
-    async def connect(self) -> RabbitMQConnection:
+    async def connect(self) -> None:
         if not self.broker:
             try:
                 self.broker = RabbitMQConnection(url=self.rabbitmq_url)
