@@ -31,7 +31,6 @@ class RedisClient:
                     health_check_interval=30,
                     decode_responses=True,
                 )
-                # Проверяем подключение
                 await self._client.ping()
             except Exception as e:
                 logger.error(f"Error connecting to Redis: {e}")
