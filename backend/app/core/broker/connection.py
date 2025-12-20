@@ -12,8 +12,8 @@ class RabbitMQConnection:
     def __init__(self, url):
         self.url = url
         self.connection: AbstractConnection | None = None
-        self.chanel: AbstractChannel
-        self.exchange: AbstractExchange
+        self.chanel: AbstractChannel = None
+        self.exchange: AbstractExchange = None
 
     async def connect(self) -> None:
         self.connection = await aio_pika.connect_robust(self.url)
