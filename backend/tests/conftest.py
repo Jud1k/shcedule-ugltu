@@ -75,29 +75,29 @@ async def redis() -> AsyncGenerator[CustomRedis, None]:
 
 
 @pytest.fixture(scope="function")
-async def broker() -> RabbitMQConnection:
+async def publisher() -> RabbitMQConnection:
     from app.core.config import settings
 
-    broker = RabbitMQConnection(url=settings.rabbitmq_url)
-    return broker
+    publisher = RabbitMQConnection(url=settings.rabbitmq_url)
+    return publisher
 
 
 @pytest.fixture(scope="function")
 async def client(
-    session: AsyncSession, redis: CustomRedis, broker: RabbitMQConnection
+    session: AsyncSession, redis: CustomRedis, publisher: RabbitMQConnection
 ) -> AsyncGenerator[AsyncClient, None]:
     import logging
     from app.main import app
     from app.limiter import limiter
     from app.db.database import get_db
     from app.cache.manager import get_redis
-    from app.core.broker.dep import get_broker
+    from app.core.broker.dep import get_publisher
 
     logging.getLogger("httpx").disabled = True
     limiter.reset()
     app.dependency_overrides[get_db] = lambda: session
     app.dependency_overrides[get_redis] = lambda: redis
-    app.dependency_overrides[get_broker] = lambda: broker
+    app.dependency_overrides[get_publisher] = lambda: publisher
     try:
         async with AsyncClient(
             transport=ASGITransport(app=app), base_url="http://test"
