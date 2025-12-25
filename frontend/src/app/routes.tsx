@@ -7,7 +7,6 @@ import RegisterPage from '../pages/auth/RegisterPage';
 import ProtectedRoute from '../components/ProtectedRoute';
 import AdminLayout from '../components/layouts/AdminLayout';
 import GroupPage from '../pages/admin/GroupPage';
-import DashboardPage from '../pages/admin/DashboardPage';
 import SubjectPage from '../pages/admin/SubjectPage';
 import TeacherPage from '../pages/admin/TeacherPage';
 import RoomPage from '../pages/admin/RoomPage';
@@ -28,24 +27,23 @@ const RoutesProvider = () => {
             </PublicOnlyRoute>
           }
         />
+        <Route
+          path="register"
+          element={
+            <PublicOnlyRoute>
+              <RegisterPage />
+            </PublicOnlyRoute>
+          }
+        />
       </Route>
-      <Route
-        path="register"
-        element={
-          <PublicOnlyRoute>
-            <RegisterPage />
-          </PublicOnlyRoute>
-        }
-      />
       <Route
         path="admin"
         element={
-          <ProtectedRoute requiredRole="admin">
-            <AdminLayout />
-          </ProtectedRoute>
+          // <ProtectedRoute requiredRole="admin">
+          <AdminLayout />
+          // </ProtectedRoute>
         }
       >
-        <Route index element={<DashboardPage />} />
         <Route path="schedule" element={<LessonPage />} />
         <Route path="subject" element={<SubjectPage />} />
         <Route path="teacher" element={<TeacherPage />} />
