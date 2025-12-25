@@ -39,9 +39,9 @@ const RoutesProvider = () => {
       <Route
         path="admin"
         element={
-          // <ProtectedRoute requiredRole="admin">
+          <ProtectedRoute requiredRole="admin">
           <AdminLayout />
-          // </ProtectedRoute>
+          </ProtectedRoute>
         }
       >
         <Route path="schedule" element={<LessonPage />} />
