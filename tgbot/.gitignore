@@ -13,7 +13,6 @@ wheels/
 .venv
 .env
 
-data/
 db.sqlite3
 *.sqlite3
 
