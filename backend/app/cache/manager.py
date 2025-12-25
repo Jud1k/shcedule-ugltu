@@ -11,5 +11,5 @@ redis_manager = RedisClient(
 
 
 async def get_redis() -> CustomRedis:
-    """Функция зависимости для получения клиента Redis"""
+    """Dependency function for obtaining Redis client"""
     return redis_manager.get_client()

@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class RedisClient:
-    """Класс для управления подключением к Redis с поддержкой явного и автоматического управления."""
+    """Class for managing Redis connections with support for automatic and explicit management."""
 
     def __init__(
         self,
@@ -20,7 +20,7 @@ class RedisClient:
         self._client = None
 
     async def connect(self):
-        """Создает и сохраняет подключение к Redis."""
+        """Create connection to redis"""
         if self._client is None:
             try:
                 self._client = CustomRedis(
@@ -31,29 +31,28 @@ class RedisClient:
                     health_check_interval=30,
                     decode_responses=True,
                 )
-                # Проверяем подключение
                 await self._client.ping()
             except Exception as e:
-                logger.error(f"Ошибка подключения к Redis: {e}")
+                logger.error(f"Error connecting to Redis: {e}")
                 raise
 
     async def close(self):
-        """Закрывает подключение к Redis."""
+        """Close conntcion to Redis."""
         if self._client:
             await self._client.aclose()
             self._client = None
 
     def get_client(self) -> CustomRedis:
-        """Возвращает объект клиента Redis."""
+        """Return instacne CustomeClient Redis."""
         if self._client is None:
-            raise RuntimeError("Redis клиент не инициализирован. Проверьте lifespan.")
+            raise RuntimeError("Redis client not initialize. Check lifespan.")
         return self._client
 
     async def __aenter__(self):
-        """Поддерживает асинхронный контекстный менеджер."""
+        """Support async context manager."""
         await self.connect()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        """Автоматически закрывает подключение при выходе из контекста."""
+        """Automaticly close connection on exit from context."""
         await self.close()

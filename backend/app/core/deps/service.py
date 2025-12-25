@@ -1,4 +1,6 @@
 from typing import Annotated
+from app.core.broker.dep import get_publisher
+from app.core.broker.connection import RabbitMQConnection
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -52,8 +54,11 @@ async def get_teacher_service(session: AsyncSession = Depends(get_db)):
 TeacherServiceDep = Annotated[TeacherService, Depends(get_teacher_service)]
 
 
-async def get_lesson_service(session: AsyncSession = Depends(get_db)):
-    return LessonService(session=session)
+async def get_lesson_service(
+    session: AsyncSession = Depends(get_db),
+    message_publisher: RabbitMQConnection = Depends(get_publisher),
+):
+    return LessonService(session=session, message_publisher=message_publisher)
 
 
 LessonServiceDep = Annotated[LessonService, Depends(get_lesson_service)]

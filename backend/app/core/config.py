@@ -16,14 +16,14 @@ class Setting(BaseSettings):
         env_file="../.env", env_ignore_empty=True, extra="ignore", env_file_encoding="utf-8"
     )
 
-    DB_HOST: str
+    DB_HOST: str = "localhost"
     DB_PORT: int
     DB_USER: str
     DB_PASSWORD: str
     DB_NAME: str
     REDIS_PORT: int
     REDIS_SSL: bool
-    REDIS_HOST: str
+    REDIS_HOST: str = "localhost"
     FIRST_SUPERUSER: str
     FIRST_SUPERUSER_PASSWORD: str
     SECRET_KEY: str
@@ -33,8 +33,8 @@ class Setting(BaseSettings):
     SENTRY_DSN: str = ""
     RABBITMQ_USER: str
     RABBITMQ_PASSWORD: str
-    RABBITMQ_HOST: str
-    RABBITMQ_PORT: str
+    RABBITMQ_HOST: str = "localhost"
+    RABBITMQ_PORT: int
     FRONTEND_HOST: str
     BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)]
 

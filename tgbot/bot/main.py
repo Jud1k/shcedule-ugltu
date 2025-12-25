@@ -62,7 +62,7 @@ async def main() -> None:
     dp.startup.register(on_startup)
     dp.shutdown.register(on_shutdown)
 
-    consumer = RabbitMQConsumer(settings.RABBITMQ_URL)
+    consumer = RabbitMQConsumer(settings.rabbitmq_url)
     worker_task = asyncio.create_task(
         consumer.consume_queue(
             queue_name="telegram_notifications",

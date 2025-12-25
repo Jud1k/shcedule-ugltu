@@ -5,19 +5,24 @@ from app.exceptions import ConflictException, NotFoundException
 from app.domain.lesson.schemas import LessonCreate, LessonUpdate
 from app.domain.lesson.service import LessonService
 from tests.factories import LessonFactory
+from app.core.broker.connection import RabbitMQConnection
 
 
 @pytest.mark.asyncio
-async def test_get_lessons(session: AsyncSession, lesson_factory: LessonFactory):
+async def test_get_lessons(
+    session: AsyncSession, publisher: RabbitMQConnection, lesson_factory: LessonFactory
+):
     created_lessons = await lesson_factory.create_batch_async(2)
-    service = LessonService(session)
+    service = LessonService(session, publisher)
     lessons = await service.get_all()
     assert len(lessons) == len(created_lessons)
 
 
 @pytest.mark.asyncio
-async def test_get_lesson(session: AsyncSession, lesson_factory: LessonFactory):
-    service = LessonService(session)
+async def test_get_lesson(
+    session: AsyncSession, publisher: RabbitMQConnection, lesson_factory: LessonFactory
+):
+    service = LessonService(session, publisher)
     created_lesson = await lesson_factory.create_async()
     lesson = await service.get_by_id(created_lesson.id)
     assert lesson is not None
@@ -25,16 +30,20 @@ async def test_get_lesson(session: AsyncSession, lesson_factory: LessonFactory):
 
 
 @pytest.mark.asyncio
-async def test_get_lesson_not_found(session: AsyncSession, lesson_factory: LessonFactory):
-    service = LessonService(session)
+async def test_get_lesson_not_found(
+    session: AsyncSession, publisher: RabbitMQConnection, lesson_factory: LessonFactory
+):
+    service = LessonService(session, publisher)
     created_lesson = lesson_factory.build()
     lesson = await service.get_by_id(created_lesson.id)
     assert lesson is None
 
 
 @pytest.mark.asyncio
-async def test_create_lesson(session: AsyncSession, lesson_factory: LessonFactory):
-    service = LessonService(session)
+async def test_create_lesson(
+    session: AsyncSession, publisher: RabbitMQConnection, lesson_factory: LessonFactory
+):
+    service = LessonService(session, publisher)
     lesson_instance = lesson_factory.build()
     lesson_in = LessonCreate.model_validate(lesson_instance)
 
@@ -52,8 +61,10 @@ async def test_create_lesson(session: AsyncSession, lesson_factory: LessonFactor
 
 
 @pytest.mark.asyncio
-async def test_update_lesson(session: AsyncSession, lesson_factory: LessonFactory):
-    service = LessonService(session)
+async def test_update_lesson(
+    session: AsyncSession, publisher: RabbitMQConnection, lesson_factory: LessonFactory
+):
+    service = LessonService(session, publisher)
     created_lesson = await lesson_factory.create_async()
     lesson_in = LessonUpdate(
         time_id=2,
@@ -77,8 +88,10 @@ async def test_update_lesson(session: AsyncSession, lesson_factory: LessonFactor
 
 
 @pytest.mark.asyncio
-async def test_update_lesson_not_found(session: AsyncSession, lesson_factory: LessonFactory):
-    service = LessonService(session)
+async def test_update_lesson_not_found(
+    session: AsyncSession, publisher: RabbitMQConnection, lesson_factory: LessonFactory
+):
+    service = LessonService(session, publisher)
     lesson_instance = lesson_factory.build()
     lesson_in = LessonUpdate(
         time_id=2,
@@ -95,8 +108,10 @@ async def test_update_lesson_not_found(session: AsyncSession, lesson_factory: Le
 
 
 @pytest.mark.asyncio
-async def test_update_lesson_conflict(session: AsyncSession, lesson_factory: LessonFactory):
-    service = LessonService(session)
+async def test_update_lesson_conflict(
+    session: AsyncSession, publisher: RabbitMQConnection, lesson_factory: LessonFactory
+):
+    service = LessonService(session, publisher)
     created_lessons = await lesson_factory.create_batch_async(2)
     lesson_in = LessonUpdate(
         time_id=created_lessons[1].time_id,
@@ -113,8 +128,10 @@ async def test_update_lesson_conflict(session: AsyncSession, lesson_factory: Les
 
 
 @pytest.mark.asyncio
-async def test_delete_lesson(session: AsyncSession, lesson_factory: LessonFactory):
-    service = LessonService(session)
+async def test_delete_lesson(
+    session: AsyncSession, publisher: RabbitMQConnection, lesson_factory: LessonFactory
+):
+    service = LessonService(session, publisher)
     created_lesson = await lesson_factory.create_async()
 
     lesson = await service.delete(created_lesson.id)

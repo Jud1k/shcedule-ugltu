@@ -9,50 +9,50 @@ logger = logging.getLogger(__name__)
 
 
 class CustomRedis(Redis):
-    """Расширенный класс Redis с дополнительными методами"""
+    """Extended Redis class with additional methods"""
 
     async def delete_key(self, key: str):
-        """Удаляет ключ из Redis."""
+        """ "Deletes a key from Redis."""
         await self.delete(key)
-        logger.info(f"Ключ {key} удален")
+        logger.info(f"Key {key} deleted")
 
     async def delete_keys_by_prefix(self, prefix: str):
-        """Удаляет ключи, начинающиеся с указанного префикса."""
+        """Deletes keys starting with the specified prefix."""
         keys = await self.keys(prefix + "*")
         if keys:
             await self.delete(*keys)
-            logger.info(f"Удалены ключи, начинающиеся с {prefix}")
+            logger.info(f"Keys starting with {prefix} deleted")
 
     async def delete_all_keys(self):
-        """Удаляет все ключи из текущей базы данных Redis."""
+        """Deletes all keys from the current Redis database."""
         await self.flushdb()
-        logger.info("Удалены все ключи из текущей базы данных")
+        logger.info("All keys deleted from the current database")
 
     async def get_value(self, key: str):
-        """Возвращает значение ключа из Redis."""
+        """Returns the value of a key from Redis."""
         value = await self.get(key)
         if value:
             return value
         else:
-            logger.info(f"Ключ {key} не найден")
+            logger.info(f"Key {key} not found")
             return None
 
     async def set_value(self, key: str, value: str):
-        """Устанавливает значение ключа в Redis."""
+        """Sets the value of a key in Redis."""
         await self.set(key, value)
-        logger.info(f"Установлено значение ключа {key}")
+        logger.info(f"Value set for key {key}")
 
     async def set_value_with_ttl(self, key: str, ttl: int, value: str):
-        """Устанавливает значение ключа с временем жизни в Redis."""
+        """Sets the value of a key with time-to-live in Redis."""
         await self.setex(key, ttl, value)
-        logger.info(f"Установлено значение ключа {key} с TTL {ttl}")
+        logger.info(f"Value set for key {key} with TTL {ttl}")
 
     async def exists(self, key: str) -> bool:
-        """Проверяет, существует ли ключ в Redis."""
+        """Checks if a key exists in Redis."""
         return await super().exists(key)
 
     async def get_keys(self, pattern: str = "*"):
-        """Возвращает список ключей, соответствующих шаблону."""
+        """Returns a list of keys matching the pattern."""
         return await self.keys(pattern)
 
     async def get_cached_data(
@@ -64,29 +64,29 @@ class CustomRedis(Redis):
         **kwargs,
     ) -> Any:
         """
-        Получает данные из кэша Redis или из БД, если их нет в кэше.
+        Retrieves data from Redis cache or from database if not in cache.
 
         Args:
-            cache_key: Ключ для кэширования данных
-            fetch_data_func: Асинхронная функция для получения данных из БД
-            *args: Позиционные аргументы для fetch_data_func
-            ttl: Время жизни кэша в секундах (по умолчанию 30 минут)
-            **kwargs: Именованные аргументы для fetch_data_func
+            cache_key: Key for caching data
+            fetch_data_func: Async function to retrieve data from database
+            *args: Positional arguments for fetch_data_func
+            ttl: Cache time-to-live in seconds (default 30 minutes)
+            **kwargs: Keyword arguments for fetch_data_func
 
         Returns:
-            Данные из кэша или из БД
+            Data from cache or from database
         """
         cached_data = await self.get(cache_key)
 
         if cached_data:
-            logger.info(f"Данные получены из кэша для ключа: {cache_key}")
+            logger.info(f"Data retrieved from cache for key: {cache_key}")
             return json.loads(cached_data)
         else:
-            logger.info(f"Данные не найдены в кэше для ключа: {cache_key}, получаем из источника")
+            logger.info(f"Data not found in cache for key: {cache_key}, retrieving from source")
             data = await fetch_data_func(*args, **kwargs)
             if data is None:
                 return data
-            # Преобразуем данные в зависимости от их типа
+
             if isinstance(data, list):
                 processed_data = [
                     item.to_dict() if hasattr(item, "to_dict") else item for item in data
@@ -94,8 +94,7 @@ class CustomRedis(Redis):
             else:
                 processed_data = data.to_dict() if hasattr(data, "to_dict") else data
 
-            # Сохраняем данные в кэше с указанным временем жизни
             await self.setex(cache_key, ttl, json.dumps(processed_data))
-            logger.info(f"Данные сохранены в кэш для ключа: {cache_key} с TTL: {ttl} сек")
+            logger.info(f"Data saved to cache for key: {cache_key} with TTL: {ttl} seconds")
 
             return processed_data

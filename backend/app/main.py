@@ -5,7 +5,7 @@ import uuid
 
 from contextlib import asynccontextmanager
 
-from app.core.broker.rabbit_connection import rabbit_conn
+from app.core.broker.dep import message_publisher
 from fastapi import FastAPI, Request, Response, status
 from fastapi.exceptions import RequestValidationError, ResponseValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -28,12 +28,12 @@ if settings.SENTRY_DSN:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await redis_manager.connect()
-    await rabbit_conn.connect()
+    await message_publisher.connect()
     logger.info("Redis connected")
     logger.info("RabbitMQ connected")
     yield
     await redis_manager.close()
-    await rabbit_conn.close()
+    await message_publisher.close()
     logger.info("Redis disconnected")
     logger.info("RabbitMQ disconnected")
 
@@ -83,8 +83,3 @@ async def validation_exception_handler2(req: Request, exc: ResponseValidationErr
         status_code=status.HTTP_400_BAD_REQUEST,
         content={"detail": "Validation error", "errors": exc.errors()},
     )
-
-
-@app.get("/")
-async def main_page() -> dict:
-    return {"Hi": "Guys"}
