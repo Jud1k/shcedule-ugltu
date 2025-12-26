@@ -1,4 +1,4 @@
-export const COURSES = [1, 2, 3, 4, 5, 6];
+export const COURSES = [1, 2, 3, 4, 5, 6] as const;
 export const INSTITUTIES = [
   'ИТИ',
   'ХТИ',
@@ -8,4 +8,4 @@ export const INSTITUTIES = [
   'ИЗО',
   'Колледж',
   'Высшая школа',
-];
+] as const;

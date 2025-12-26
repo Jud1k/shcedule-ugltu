@@ -18,7 +18,7 @@ export const TIME_SLOTS: TimeSlot[] = [
   { id: 4, duration: '15:10-16:45' },
   { id: 5, duration: '16:55-18:30' },
   { id: 6, duration: '18:40-20:15' },
-];
+] as const;
 
 export const DAYS_OF_WEAK = [
   { id: 1, name: 'Понедельник' },
@@ -27,9 +27,9 @@ export const DAYS_OF_WEAK = [
   { id: 4, name: 'Четверг' },
   { id: 5, name: 'Пятница' },
   { id: 6, name: 'Суббота' },
-];
+] as const;
 
-export const LESSON_TYPES = ['Лекция', 'Практика', 'Лабораторная'];
+export const LESSON_TYPES = ['Лекция', 'Практика', 'Лабораторная'] as const;
 
 export const monthNames: string[] = [
   'Январь',
@@ -44,7 +44,7 @@ export const monthNames: string[] = [
   'Октябрь',
   'Ноябрь',
   'Декабрь',
-];
+] as const;
 
 export const weekDayNames: string[] = [
   'ПН',
@@ -54,7 +54,7 @@ export const weekDayNames: string[] = [
   'ПТ',
   'СБ',
   'ВС',
-];
+] as const;
 
 export type InputValues = {
   teacher: string;
